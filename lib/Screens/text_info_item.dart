@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 class TextInfoItem extends StatelessWidget {
+  final String text;
+
+  const TextInfoItem({super.key, required this.text});
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -51,13 +55,13 @@ class TextInfoItem extends StatelessWidget {
           // Dummy text box with padding
           Container(
             padding: EdgeInsets.all(16),
+            width: double.infinity,
             decoration: BoxDecoration(
               color: Color(0xFF1C1C1E),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              'This is some dummy text for now. You can replace this with actual content. '
-              'This box provides a container for any text or information that you want to display in the UI.',
+              text,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 14,

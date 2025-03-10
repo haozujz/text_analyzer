@@ -6,17 +6,24 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 // import 'package:image/image.dart' as img;
 // import 'package:path_provider/path_provider.dart';
 
-enum OCRError { imageProcessingFailed, unknownError }
+enum OCRError {
+  noImage("No image provided for text extraction"),
+  imageProcessingFailed("Invalid request data"),
+  unknownError("Invalid request data");
+
+  final String message;
+  const OCRError(this.message);
+}
 
 class OCRService {
   OCRService._();
   static final OCRService _instance = OCRService._();
   factory OCRService() => _instance;
 
-  Future<void> performOCR(String imagePath) async {
+  Future<String> performOCR(String imagePath) async {
     if (imagePath.isEmpty) {
-      LoggerService().info('No image provided for OCR.');
-      return;
+      //LoggerService().info('No image provided for OCR.');
+      throw OCRError.noImage;
     }
 
     // Initialize the text recognizer
@@ -34,6 +41,7 @@ class OCRService {
 
       // Handle the extracted text as needed
       LoggerService().info('Extracted Text: $extractedText');
+      return extractedText;
     } catch (e) {
       throw OCRError.unknownError;
     } finally {

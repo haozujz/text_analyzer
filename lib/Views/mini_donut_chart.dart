@@ -4,7 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 class MiniDonutChart extends StatelessWidget {
   final double positive; // Positive percentage value
 
-  MiniDonutChart({required this.positive});
+  const MiniDonutChart({super.key, required this.positive});
 
   @override
   Widget build(BuildContext context) {

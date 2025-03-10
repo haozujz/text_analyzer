@@ -3,14 +3,18 @@ import 'text_info_item.dart';
 import 'sentiment_info_item.dart';
 import 'entity_info_item.dart';
 import 'key_phrase_info_item.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../ViewModels/text_analysis_vm.dart';
 
-class TextAnalysisTray extends StatelessWidget {
+class TextAnalysisTray extends ConsumerWidget {
   final ScrollController scrollController;
 
-  TextAnalysisTray({required this.scrollController});
+  const TextAnalysisTray({required this.scrollController, super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final viewModel = ref.watch(textAnalysisViewModelProvider);
+
     return ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       child: Container(
@@ -30,13 +34,19 @@ class TextAnalysisTray extends StatelessWidget {
                   borderRadius: BorderRadius.circular(3),
                 ),
               ),
-              TextInfoItem(),
+              TextInfoItem(text: viewModel.text),
               SizedBox(height: 12),
-              SentimentInfoItem(),
+              SentimentInfoItem(
+                sentimentAnalysis: viewModel.analysisResult?.sentiment,
+              ),
               SizedBox(height: 12),
-              EntityInfoItem(),
+              EntityInfoItem(
+                entities: viewModel.analysisResult?.entities ?? [],
+              ),
               SizedBox(height: 12),
-              KeyPhraseInfoItem(),
+              KeyPhraseInfoItem(
+                keyPhrases: viewModel.analysisResult?.keyPhrases ?? [],
+              ),
               SizedBox(height: 12),
             ],
           ),
@@ -45,3 +55,12 @@ class TextAnalysisTray extends StatelessWidget {
     );
   }
 }
+
+
+// class TextAnalysisTray extends StatelessWidget {
+//   final ScrollController scrollController;
+
+//   TextAnalysisTray({required this.scrollController});
+
+//   @override
+//   Widget build(BuildContext context) {

@@ -3,7 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'camera_screen.dart';
 import '../ViewModels/camera_vm.dart';
-import '../Services/ocr_service.dart';
+import '../ViewModels/text_analysis_vm.dart';
 import 'text_analysis_tray.dart';
 
 // import 'package:photo_manager/photo_manager.dart';
@@ -71,6 +71,11 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
     final cameraState = ref.watch(cameraViewModelProvider);
     final cameraViewModel = ref.read(cameraViewModelProvider.notifier);
 
+    //final textAnalysisState = ref.watch(textAnalysisViewModelProvider);
+    final textAnalysisViewModel = ref.read(
+      textAnalysisViewModelProvider.notifier,
+    );
+
     final double screenHeight = MediaQuery.of(context).size.height;
 
     // Define fixed pixel heights
@@ -96,7 +101,7 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
           curve: Curves.easeInOut,
         );
 
-        await OCRService().performOCR(next.imagePath);
+        textAnalysisViewModel.onNewPhotoTaken(next.imagePath);
       }
     });
 

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import '../Views/mini_donut_chart.dart'; // Assuming you already have a MiniDonutChart widget
+//import '../Views/mini_donut_chart.dart';
+import '../Models/analysis_result_model.dart';
 
 class EntityInfoItem extends StatelessWidget {
+  final List<EntitySentiment> entities;
+
+  const EntityInfoItem({super.key, required this.entities});
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -15,9 +20,8 @@ class EntityInfoItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, // Align left
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title with underline starting from the right
           RichText(
             text: TextSpan(
               style: TextStyle(fontSize: 16, color: Colors.white),
@@ -39,127 +43,180 @@ class EntityInfoItem extends StatelessWidget {
           SizedBox(height: 4),
           Stack(
             alignment: Alignment.centerRight,
-            children: [
-              Container(
-                width:
-                    30, // Adjust this to make the underline shorter or longer
-                height: 2,
-                color: Colors.white,
-              ),
-            ],
+            children: [Container(width: 30, height: 2, color: Colors.white)],
           ),
-          SizedBox(height: 26), // Spacing between title and container
-          // Column of row items
+          SizedBox(height: 26),
+
           Column(
             children: [
-              // Item 1 with text box and mini donut chart
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment:
-                    CrossAxisAlignment
-                        .center, // Align children vertically in the center
-                children: [
-                  // Text Box
-                  Container(
-                    width:
-                        screenWidth * 0.5, // Text box takes up half the width
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF1C1C1E),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      'Entity 1: This is some dummy text for now.',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontFamily: 'SF Pro Text',
+              for (int i = 0; i < entities.length; i++) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: screenWidth * 0.55,
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 11, 11, 19),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        entities[i].text,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontFamily: 'SF Pro Text',
+                        ),
                       ),
                     ),
-                  ),
-                  // Mini Donut Chart
-                  SizedBox(
-                    height: 80, // Mini donut chart height
-                    width: 80, // Mini donut chart width
-                    child: MiniDonutChart(
-                      positive: 65.0,
-                    ), // Example with 65% positive
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 16),
-
-              // Item 2 with text box and mini donut chart
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Text Box
-                  Container(
-                    width:
-                        screenWidth * 0.5, // Text box takes up half the width
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF1C1C1E),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      'Entity 2: More dummy text here.',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontFamily: 'SF Pro Text',
+                    SizedBox(
+                      height: 40,
+                      width: 70,
+                      child: Icon(
+                        _getSentimentIcon(entities[i].sentiment),
+                        color: _getSentimentColor(entities[i].sentiment),
+                        size: 40,
                       ),
                     ),
-                  ),
-                  // Mini Donut Chart
-                  SizedBox(
-                    height: 80, // Mini donut chart height
-                    width: 80, // Mini donut chart width
-                    child: MiniDonutChart(
-                      positive: 80.0,
-                    ), // Example with 80% positive
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
+                  ],
+                ),
+                if (i != entities.length - 1) SizedBox(height: 16),
+              ],
 
-              // Item 3 with text box and mini donut chart
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Text Box
-                  Container(
-                    width:
-                        screenWidth * 0.5, // Text box takes up half the width
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF1C1C1E),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      'Entity 3: Here’s another dummy text.',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontFamily: 'SF Pro Text',
-                      ),
-                    ),
-                  ),
-                  // Mini Donut Chart
-                  SizedBox(
-                    height: 80, // Mini donut chart height
-                    width: 80, // Mini donut chart width
-                    child: MiniDonutChart(
-                      positive: 45.0,
-                    ), // Example with 45% positive
-                  ),
-                ],
-              ),
+              //     Container(
+              //       width:
+              //           screenWidth * 0.55, // Text box takes up half the width
+              //       padding: EdgeInsets.all(16),
+              //       decoration: BoxDecoration(
+              //         color: Color(0xFF1C1C1E),
+              //         borderRadius: BorderRadius.circular(12),
+              //       ),
+              //       child: Text(
+              //         'Entity 1: This is some dummy text for now.',
+              //         style: TextStyle(
+              //           color: Colors.white,
+              //           fontSize: 14,
+              //           fontFamily: 'SF Pro Text',
+              //         ),
+              //       ),
+              //     ),
+
+              //     SizedBox(
+              //       height: 80,
+              //       width: 80,
+              //       child: Icon(
+              //         Icons.thumb_up,
+              //         color: Color(0xFF34C759),
+              //         size: 40,
+              //       ),
+              //     ),
+              //   ],
+              // ),
+
+              // SizedBox(height: 16),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     // Text Box
+              //     Container(
+              //       width:
+              //           screenWidth * 0.5, // Text box takes up half the width
+              //       padding: EdgeInsets.all(16),
+              //       decoration: BoxDecoration(
+              //         color: Color(0xFF1C1C1E),
+              //         borderRadius: BorderRadius.circular(12),
+              //       ),
+              //       child: Text(
+              //         'Entity 2: More dummy text here.',
+              //         style: TextStyle(
+              //           color: Colors.white,
+              //           fontSize: 14,
+              //           fontFamily: 'SF Pro Text',
+              //         ),
+              //       ),
+              //     ),
+              //     // Mini Donut Chart
+              //     SizedBox(
+              //       height: 80, // Mini donut chart height
+              //       width: 80, // Mini donut chart width
+              //       child: MiniDonutChart(
+              //         positive: 80.0,
+              //       ), // Example with 80% positive
+              //     ),
+              //   ],
+              // ),
+              // SizedBox(height: 16),
+
+              // // Item 3 with text box and mini donut chart
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     // Text Box
+              //     Container(
+              //       width:
+              //           screenWidth * 0.5, // Text box takes up half the width
+              //       padding: EdgeInsets.all(16),
+              //       decoration: BoxDecoration(
+              //         color: Color(0xFF1C1C1E),
+              //         borderRadius: BorderRadius.circular(12),
+              //       ),
+              //       child: Text(
+              //         'Entity 3: Here’s another dummy text.',
+              //         style: TextStyle(
+              //           color: Colors.white,
+              //           fontSize: 14,
+              //           fontFamily: 'SF Pro Text',
+              //         ),
+              //       ),
+              //     ),
+              //     // Mini Donut Chart
+              //     SizedBox(
+              //       height: 80, // Mini donut chart height
+              //       width: 80, // Mini donut chart width
+              //       child: MiniDonutChart(
+              //         positive: 45.0,
+              //       ), // Example with 45% positive
+              //     ),
+              //],
+              //),
             ],
           ),
         ],
       ),
     );
+  }
+}
+
+IconData _getSentimentIcon(String sentiment) {
+  print('check sent: $sentiment');
+
+  switch (sentiment) {
+    case 'positive':
+      return Icons.thumb_up;
+    case 'negative':
+      return Icons.thumb_down;
+    case 'neutral':
+      return Icons.sentiment_neutral;
+    case 'mixed':
+      return Icons.thumbs_up_down;
+    default:
+      return Icons.help; // Fallback icon
+  }
+}
+
+Color _getSentimentColor(String sentiment) {
+  print('check sent: $sentiment');
+
+  switch (sentiment) {
+    case 'positive':
+      return Color(0xFF34C759); // Green for positive
+    case 'negative':
+      return Color(0xFFFF3B30); // Red for negative
+    case 'neutral':
+      return Color(0xFF8E8E93); // Gray for neutral
+    case 'mixed':
+      return Color(0xFF34C759); // Green for mixed (or any color you want)
+    default:
+      return Colors.grey; // Fallback color
   }
 }

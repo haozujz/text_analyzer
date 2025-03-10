@@ -1,7 +1,33 @@
 import 'package:flutter/material.dart';
 import '../Views/donut_chart.dart';
+import '../Models/analysis_result_model.dart';
 
 class SentimentInfoItem extends StatelessWidget {
+  final SentimentAnalysis? sentimentAnalysis;
+
+  const SentimentInfoItem({super.key, this.sentimentAnalysis});
+
+  // Computed value for the highest sentiment type
+  String get highestSentiment {
+    if (sentimentAnalysis == null) {
+      return 'neutral';
+    }
+
+    Map<String, double> sentimentMap = {
+      'positive': sentimentAnalysis?.positive ?? 0.0,
+      'negative': sentimentAnalysis?.negative ?? 0.0,
+      'neutral': sentimentAnalysis?.neutral ?? 0.0,
+      'mixed': sentimentAnalysis?.mixed ?? 0.0,
+    };
+
+    // Sort the map by value and get the key with the highest value
+    var highest = sentimentMap.entries.reduce(
+      (curr, next) => curr.value > next.value ? curr : next,
+    );
+
+    return highest.key;
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -62,31 +88,56 @@ class SentimentInfoItem extends StatelessWidget {
                   height: 100, // Reduced height for the donut chart
                   width: 100, // Width to fit chart within the row
                   child: DonutChart(
-                    positive: 45.0,
-                    negative: 25.0,
-                    neutral: 15.0,
-                    mixed: 15.0,
+                    positive: sentimentAnalysis?.positive ?? 25.0,
+                    negative: sentimentAnalysis?.negative ?? 25.0,
+                    neutral: sentimentAnalysis?.neutral ?? 25.0,
+                    mixed: sentimentAnalysis?.mixed ?? 25.0,
                   ),
                 ),
 
                 // Thumbs Up/Down/Neutral Icons
                 Column(
                   children: [
-                    Icon(
-                      Icons.thumb_up,
-                      color: Color(0xFF34C759),
-                      size: 40,
-                    ), // Green for positive
-                    // SizedBox(height: 8), // Space between icons
-                    // Icon(
-                    //   Icons.thumb_down,
-                    //   color: Color(0xFFFF3B30),
-                    // ), // Red for negative
-                    // SizedBox(height: 8),
-                    // Icon(
-                    //   Icons.remove,
-                    //   color: Color(0xFF8E8E93),
-                    // ), // Grey for neutral
+                    Builder(
+                      builder: (context) {
+                        Icon getSentimentIcon(String sentiment) {
+                          switch (sentiment) {
+                            case 'positive':
+                              return Icon(
+                                Icons.thumb_up,
+                                color: Color(0xFF34C759),
+                                size: 40,
+                              );
+                            case 'negative':
+                              return Icon(
+                                Icons.thumb_down,
+                                color: Color(0xFFFF3B30),
+                                size: 40,
+                              );
+                            case 'neutral':
+                              return Icon(
+                                Icons.sentiment_neutral,
+                                color: Color(0xFF8E8E93),
+                                size: 40,
+                              );
+                            case 'mixed':
+                              return Icon(
+                                Icons.thumbs_up_down,
+                                color: Color(0xFF34C759),
+                                size: 40,
+                              );
+                            default:
+                              return Icon(
+                                Icons.help,
+                                color: Colors.grey,
+                                size: 40,
+                              ); // Default icon in case of undefined sentiment
+                          }
+                        }
+
+                        return getSentimentIcon(highestSentiment);
+                      },
+                    ),
                   ],
                 ),
 

@@ -7,7 +7,8 @@ class DonutChart extends StatelessWidget {
   final double neutral; // Neutral percentage value
   final double mixed; // Mixed percentage value
 
-  DonutChart({
+  const DonutChart({
+    super.key,
     required this.positive,
     required this.negative,
     required this.neutral,
@@ -62,14 +63,14 @@ class DonutChart extends StatelessWidget {
               ],
             ),
           ),
-          // Display the highest percentage score in the center
+
           Text(
-            '${(highest).toStringAsFixed(0)}%', // Show the percentage rounded to the nearest integer
+            '${(highest).toStringAsFixed(0)}%',
             style: TextStyle(
-              fontSize: 20, // Reduced font size to 3/5 of the original size
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               fontFamily: 'SF Pro Text',
-              color: Colors.white, // White color for contrast
+              color: Colors.white,
             ),
           ),
         ],

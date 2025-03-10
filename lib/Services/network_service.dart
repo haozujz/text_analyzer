@@ -25,7 +25,7 @@ class NetworkService {
   final baseUrl =
       'https://0c1qfilb2f.execute-api.ap-northeast-1.amazonaws.com/dev/process_text';
 
-  Future<Map<String, dynamic>> getTextAnalysis({
+  Future<Map<String, dynamic>> fetchTextAnalysis({
     required String textInput,
   }) async {
     try {
