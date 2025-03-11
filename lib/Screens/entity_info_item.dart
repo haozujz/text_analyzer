@@ -12,7 +12,7 @@ class EntityInfoItem extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Container(
-      width: screenWidth * 0.85, // 85% of screen width
+      width: screenWidth * 0.85,
       padding: EdgeInsets.all(16),
       margin: EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
@@ -57,7 +57,7 @@ class EntityInfoItem extends StatelessWidget {
                       width: screenWidth * 0.55,
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 11, 11, 19),
+                        color: Color(0xFF1C1C1E),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -82,6 +82,46 @@ class EntityInfoItem extends StatelessWidget {
                 ),
                 if (i != entities.length - 1) SizedBox(height: 16),
               ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+IconData _getSentimentIcon(String sentiment) {
+  switch (sentiment) {
+    case 'positive':
+      return Icons.thumb_up;
+    case 'negative':
+      return Icons.thumb_down;
+    case 'neutral':
+      return Icons.sentiment_neutral;
+    case 'mixed':
+      return Icons.thumbs_up_down;
+    default:
+      return Icons.help;
+  }
+}
+
+Color _getSentimentColor(String sentiment) {
+  switch (sentiment) {
+    case 'positive':
+      return Color(0xFF34C759);
+    case 'negative':
+      return Color(0xFFFF3B30);
+    case 'neutral':
+      return Color(0xFF8E8E93);
+    case 'mixed':
+      return Color(0xFF34C759);
+    default:
+      return Colors.grey;
+  }
+}
+
+
+
 
               //     Container(
               //       width:
@@ -179,44 +219,3 @@ class EntityInfoItem extends StatelessWidget {
               //     ),
               //],
               //),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-IconData _getSentimentIcon(String sentiment) {
-  print('check sent: $sentiment');
-
-  switch (sentiment) {
-    case 'positive':
-      return Icons.thumb_up;
-    case 'negative':
-      return Icons.thumb_down;
-    case 'neutral':
-      return Icons.sentiment_neutral;
-    case 'mixed':
-      return Icons.thumbs_up_down;
-    default:
-      return Icons.help; // Fallback icon
-  }
-}
-
-Color _getSentimentColor(String sentiment) {
-  print('check sent: $sentiment');
-
-  switch (sentiment) {
-    case 'positive':
-      return Color(0xFF34C759); // Green for positive
-    case 'negative':
-      return Color(0xFFFF3B30); // Red for negative
-    case 'neutral':
-      return Color(0xFF8E8E93); // Gray for neutral
-    case 'mixed':
-      return Color(0xFF34C759); // Green for mixed (or any color you want)
-    default:
-      return Colors.grey; // Fallback color
-  }
-}

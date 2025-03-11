@@ -38,7 +38,13 @@ class TextAnalysisState {
 class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
   TextAnalysisViewModel() : super(TextAnalysisState());
 
-  void onNewPhotoTaken(String imagePath) async {
+  void onPhotoChange(String imagePath) async {
+    state = state.copyWith(text: '...');
+
+    if (imagePath.isEmpty) {
+      return;
+    }
+
     String text = '...';
 
     try {
@@ -52,23 +58,28 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
       }
     }
 
+    if (text.isEmpty) {
+      text = '...';
+    }
+
     state = state.copyWith(text: text);
+
     if (state.text.isNotEmpty && state.text != '...') {
       var resp = await getTextAnalysisJSON();
       interpretTextAnalysisJSON(resp);
     }
   }
 
-  // String replaceNewlinesWithSpaces(String inputText) {
-  //   return inputText.replaceAll('\n', ' ');
-  // }
+  String replaceNewlinesWithTwoSpaces(String inputText) {
+    return inputText.replaceAll('\n', '  ');
+  }
 
   Future<Map<String, dynamic>> getTextAnalysisJSON() async {
-    //String modifiedText = replaceNewlinesWithSpaces(state.text);
+    String modifiedText = replaceNewlinesWithTwoSpaces(state.text);
 
     try {
       var result = await NetworkService().fetchTextAnalysis(
-        textInput: state.text,
+        textInput: modifiedText,
       );
       LoggerService().info("Network Response: $result");
       return result;

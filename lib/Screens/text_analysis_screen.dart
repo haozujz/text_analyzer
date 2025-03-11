@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'camera_screen.dart';
+import '../Screens/camera_screen.dart';
 import '../ViewModels/camera_vm.dart';
 import '../ViewModels/text_analysis_vm.dart';
 import 'text_analysis_tray.dart';
@@ -101,7 +101,7 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
           curve: Curves.easeInOut,
         );
 
-        textAnalysisViewModel.onNewPhotoTaken(next.imagePath);
+        textAnalysisViewModel.onPhotoChange(next.imagePath);
       }
     });
 

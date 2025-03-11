@@ -5,6 +5,8 @@ import 'entity_info_item.dart';
 import 'key_phrase_info_item.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../ViewModels/text_analysis_vm.dart';
+import '../ViewModels/camera_vm.dart';
+import 'package:flutter/cupertino.dart';
 
 class TextAnalysisTray extends ConsumerWidget {
   final ScrollController scrollController;
@@ -13,7 +15,8 @@ class TextAnalysisTray extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModel = ref.watch(textAnalysisViewModelProvider);
+    final textAnalysisState = ref.watch(textAnalysisViewModelProvider);
+    final cameraState = ref.watch(cameraViewModelProvider);
 
     return ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
@@ -25,28 +28,49 @@ class TextAnalysisTray extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Container(
-                width: 36,
-                height: 5,
-                margin: EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(255, 255, 255, 0.3),
-                  borderRadius: BorderRadius.circular(3),
+              AnimatedOpacity(
+                duration: Duration(
+                  milliseconds: 300,
+                ), // Adjust for smoother animation
+                opacity: cameraState.imagePath.isNotEmpty ? 1.0 : 0.0,
+                child: Container(
+                  width: 36,
+                  height: 5,
+                  margin: EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(255, 255, 255, 0.3),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
                 ),
               ),
-              TextInfoItem(text: viewModel.text),
+
+              TextInfoItem(text: textAnalysisState.text),
               SizedBox(height: 12),
-              SentimentInfoItem(
-                sentimentAnalysis: viewModel.analysisResult?.sentiment,
-              ),
-              SizedBox(height: 12),
-              EntityInfoItem(
-                entities: viewModel.analysisResult?.entities ?? [],
-              ),
-              SizedBox(height: 12),
-              KeyPhraseInfoItem(
-                keyPhrases: viewModel.analysisResult?.keyPhrases ?? [],
-              ),
+              if (textAnalysisState.analysisResult == null) ...[
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: CupertinoActivityIndicator(
+                      radius: 15, // Apple-style spinner size
+                    ),
+                  ),
+                ),
+              ] else ...[
+                SentimentInfoItem(
+                  sentimentAnalysis:
+                      textAnalysisState.analysisResult?.sentiment,
+                ),
+                SizedBox(height: 12),
+                EntityInfoItem(
+                  entities: textAnalysisState.analysisResult?.entities ?? [],
+                ),
+                SizedBox(height: 12),
+                KeyPhraseInfoItem(
+                  keyPhrases:
+                      textAnalysisState.analysisResult?.keyPhrases ?? [],
+                ),
+              ],
+
               SizedBox(height: 12),
             ],
           ),
@@ -55,12 +79,3 @@ class TextAnalysisTray extends ConsumerWidget {
     );
   }
 }
-
-
-// class TextAnalysisTray extends StatelessWidget {
-//   final ScrollController scrollController;
-
-//   TextAnalysisTray({required this.scrollController});
-
-//   @override
-//   Widget build(BuildContext context) {

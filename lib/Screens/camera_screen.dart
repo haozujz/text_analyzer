@@ -154,36 +154,17 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                                     size: 32,
                                   ),
                                   padding: EdgeInsets.all(10),
-                                  onPressed: () {
-                                    // Show the menu
-                                    showMenu(
-                                      context: context,
-                                      position: RelativeRect.fromLTRB(
-                                        MediaQuery.of(context).size.width -
-                                            60, // Position horizontally
-                                        80, // Position vertically just below the button
-                                        0,
-                                        0,
-                                      ),
-                                      items: [
-                                        PopupMenuItem(
-                                          height:
-                                              40, // Make the menu item more compact
-                                          child: Text(
-                                            "Save",
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                            ), // Smaller font for a sleek look
-                                          ),
-                                          onTap: () {
-                                            // Handle save action
-                                            print("Save clicked");
-                                          },
-                                        ),
-                                      ],
-                                      elevation:
-                                          2, // Minimal elevation for a flatter, modern look
-                                    );
+                                  onPressed: () async {
+                                    final RenderBox renderBox =
+                                        context.findRenderObject() as RenderBox;
+                                    final Offset offset =
+                                        renderBox.localToGlobal(Offset.zero) +
+                                        Offset(
+                                          renderBox.size.width,
+                                          renderBox.size.height * 0.1,
+                                        );
+
+                                    _showPopupMenu(context, offset);
                                   },
                                 ),
                               ),
@@ -198,12 +179,33 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   }
 }
 
-
-
-
 //                 Navigator.push(
 //                   context,
 //                   MaterialPageRoute(
 //                     builder:
 //                         (context) => DisplayPictureScreen(imagePath: imagePath),
 
+void _showPopupMenu(BuildContext context, Offset position) {
+  final RenderBox overlay =
+      Overlay.of(context).context.findRenderObject() as RenderBox;
+
+  showMenu(
+    context: context,
+    position: RelativeRect.fromRect(
+      Rect.fromLTWH(position.dx, position.dy, 0, 0), // Correctly position it
+      Offset.zero &
+          overlay.size, // Ensure menu appears within the screen bounds
+    ),
+    items: [
+      PopupMenuItem(
+        child: Text(
+          "Save",
+          style: TextStyle(color: Colors.white),
+        ), // White text for dark mode
+        onTap: () => print("Save clicked"),
+      ),
+    ],
+    color: Colors.grey[900], // Dark background
+    elevation: 4,
+  );
+}
