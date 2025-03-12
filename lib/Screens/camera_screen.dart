@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../ViewModels/camera_vm.dart';
 import 'photo_preview.dart';
+import '../Services/logger_service.dart';
 
 class CameraScreen extends ConsumerStatefulWidget {
   const CameraScreen({super.key});
@@ -179,12 +180,6 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   }
 }
 
-//                 Navigator.push(
-//                   context,
-//                   MaterialPageRoute(
-//                     builder:
-//                         (context) => DisplayPictureScreen(imagePath: imagePath),
-
 void _showPopupMenu(BuildContext context, Offset position) {
   final RenderBox overlay =
       Overlay.of(context).context.findRenderObject() as RenderBox;
@@ -202,7 +197,7 @@ void _showPopupMenu(BuildContext context, Offset position) {
           "Save",
           style: TextStyle(color: Colors.white),
         ), // White text for dark mode
-        onTap: () => print("Save clicked"),
+        onTap: () => LoggerService().info("Save clicked"),
       ),
     ],
     color: Colors.grey[900], // Dark background

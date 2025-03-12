@@ -55,6 +55,13 @@ dependencies:
   # AWS
   aws_dynamodb_api: ^2.0.0
 
+  amplify_flutter: ^2.6.1
+  amplify_auth_cognito: ^2.6.1
+  amplify_authenticator: ^2.3.3
+  amplify_storage_s3: ^2.6.1
+  amplify_api: ^2.6.1
+  amplify_datastore: ^2.6.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

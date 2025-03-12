@@ -4,26 +4,145 @@ import 'Screens/text_analysis_screen.dart';
 
 // import 'package:riverpod/riverpod.dart';
 
-void main() {
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_authenticator/amplify_authenticator.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'amplify_outputs.dart';
+
+Future<void> main() async {
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    await _configureAmplify();
+    runApp(const MyApp());
+  } on AmplifyException catch (e) {
+    runApp(Text("Error configuring Amplify: ${e.message}"));
+  }
+
   runApp(ProviderScope(child: MyApp()));
+}
+
+Future<void> _configureAmplify() async {
+  try {
+    await Amplify.addPlugin(AmplifyAuthCognito());
+    await Amplify.configure(amplifyConfig);
+    safePrint('Successfully configured');
+  } on Exception catch (e) {
+    safePrint('Error configuring Amplify: $e');
+  }
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+    return Authenticator(
+      child: MaterialApp(
+        builder: Authenticator.builder(),
+        home: Scaffold(
+          body: Center(
+            child: MaterialApp(
+              title: 'Flutter Demo',
+              theme: ThemeData(
+                colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              ),
+              // home: const MyHomePage(title: 'Flutter Demo Home Page'),
+              home: const TextAnalysisScreen(),
+            ),
+          ),
+        ),
       ),
-      // home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      home: TextAnalysisScreen(),
     );
   }
 }
+
+
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Authenticator(
+//       authenticatorBuilder: (context, state) {
+//         return Scaffold(
+//           body: Center(
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 if (state.currentStep == AuthenticatorStep.signIn) ...[
+//                   const Text("Welcome Back!", style: TextStyle(fontSize: 24)),
+//                   TextField(
+//                     decoration: InputDecoration(labelText: "Email"),
+//                     onChanged: (value) => state.username = value,
+//                   ),
+//                   TextField(
+//                     decoration: InputDecoration(labelText: "Password"),
+//                     obscureText: true,
+//                     onChanged: (value) => state.password = value,
+//                   ),
+//                   ElevatedButton(
+//                     onPressed: state.signIn,
+//                     child: const Text("Login"),
+//                   ),
+//                   TextButton(
+//                     onPressed:
+//                         () => state.changeStep(
+//                           AuthenticatorStep.signUp,
+//                         ), // Navigate to sign-up
+//                     child: const Text("Create an account"),
+//                   ),
+//                 ],
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//       child: MaterialApp(
+//         builder: Authenticator.builder(),
+//         home: const TextAnalysisScreen(),
+//       ),
+//     );
+//   }
+// }
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+//   @override
+//   Widget build(BuildContext context) {
+//     return Authenticator(
+//       child: MaterialApp(
+//         builder: Authenticator.builder(),
+//         home: const Scaffold(
+//           body: Center(
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [SignOutButton()],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+//   // This widget is the root of your application.
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Flutter Demo',
+//       theme: ThemeData(
+//         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+//       ),
+//       // home: const MyHomePage(title: 'Flutter Demo Home Page'),
+//       home: TextAnalysisScreen(),
+//     );
+//   }
+// }
 
 // class MyHomePage extends StatefulWidget {
 //   const MyHomePage({super.key, required this.title});
@@ -75,16 +194,10 @@ class MyApp extends StatelessWidget {
 //   }
 // }
 
-// void callLambdaFunction() async {
-//   try {
-//     var result = await NetworkManager().getData(textInput: "Hello World");
-//     LoggerService().info("Response: $result");
-//   } catch (e) {
-//     if (e is NetworkError) {
-//       LoggerService().error("Network error: ${e.message}");
-//       return;
-//     } else {
-//       LoggerService().error("Error calling AWS Lambda: $e");
-//     }
-//   }
-// }
+  // // Add the plugins
+  // Amplify.addPlugins([
+  //   AmplifyAuthCognito(),
+  //   AmplifyStorageS3(),
+  //   AmplifyAPI(),
+  //   AmplifyDataStore(),
+  // ]);

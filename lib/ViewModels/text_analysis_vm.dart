@@ -122,12 +122,12 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
 
     // Output values
 
-    print('Text: $text');
-    print('Language: $language');
-    print('Sentiment: $sentiment');
-    print('Sentiment Scores: $sentimentScores');
-    print('Entity Sentiments: $entitySentiments');
-    print('Key Phrases: $keyPhrases');
+    // print('Text: $text');
+    // print('Language: $language');
+    // print('Sentiment: $sentiment');
+    // print('Sentiment Scores: $sentimentScores');
+    // print('Entity Sentiments: $entitySentiments');
+    // print('Key Phrases: $keyPhrases');
 
     SentimentAnalysis newSentiment = SentimentAnalysis(
       sentiment: sentiment.toLowerCase(),

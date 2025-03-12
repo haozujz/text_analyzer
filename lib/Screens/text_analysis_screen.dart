@@ -5,6 +5,7 @@ import '../Screens/camera_screen.dart';
 import '../ViewModels/camera_vm.dart';
 import '../ViewModels/text_analysis_vm.dart';
 import 'text_analysis_tray.dart';
+import 'login_screen.dart';
 
 // import 'package:photo_manager/photo_manager.dart';
 // import 'dart:io';
@@ -165,6 +166,8 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
               ),
             ),
 
+          SignOutButton(),
+
           if (cameraState.imagePath.isEmpty)
             Positioned(
               bottom: 200,
@@ -197,7 +200,7 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
             ),
 
           // Draggable control tray
-          Container(
+          SizedBox(
             height: 5000,
             child: IgnorePointer(
               ignoring: cameraState.imagePath.isEmpty,
