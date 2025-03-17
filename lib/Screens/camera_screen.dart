@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../ViewModels/camera_vm.dart';
-import 'photo_preview.dart';
+import '../Utilities/constants.dart';
+import '../ViewModels/camera_vm.dart';
 import '../Services/logger_service.dart';
+import 'photo_preview.dart';
 
 class CameraScreen extends ConsumerStatefulWidget {
   const CameraScreen({super.key});
@@ -17,19 +18,24 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(
-      () => ref.read(cameraViewModelProvider.notifier).initializeCamera(),
-    );
 
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    // Future.microtask(() {
+    //   // if (!ref.watch(cameraViewModelProvider).isCameraInitialized) {
+    //   ref.read(cameraViewModelProvider.notifier).initializeCamera();
+    //   // } else {
+    //   // ref.read(cameraViewModelProvider.notifier).resumeCamera();
+    //   // }
+    // });
+
+    //SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
 
-  @override
-  void dispose() {
-    // Restore UI when leaving
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   // Restore UI when leaving
+  //   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +63,11 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                         style: TextStyle(color: Colors.white),
                       )
                       : !cameraState.isCameraInitialized
-                      ? const CircularProgressIndicator()
+                      ? const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.secondary,
+                        ),
+                      )
                       : Stack(
                         children: [
                           // Conditionally show camera or captured image
@@ -96,8 +106,8 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                           // Navigate to preview when imagePath is set
                           if (cameraState.imagePath.isNotEmpty)
                             Positioned(
-                              top: 30,
-                              left: 20,
+                              top: 20,
+                              left: 10,
                               child: Container(
                                 decoration: BoxDecoration(
                                   color: const Color.fromRGBO(0, 0, 0, 0),
@@ -113,7 +123,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                                 child: IconButton(
                                   icon: Icon(
                                     Icons.close,
-                                    color: Colors.white,
+                                    color: AppColors.text,
                                     size: 32,
                                   ),
                                   padding: EdgeInsets.all(
@@ -128,21 +138,15 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
 
                           if (cameraState.imagePath.isNotEmpty)
                             Positioned(
-                              top: 30,
-                              right:
-                                  20, // Positioned on the opposite side of the close button
+                              top: 20,
+                              right: 10,
                               child: Container(
                                 decoration: BoxDecoration(
                                   color: Colors.transparent,
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Color.fromRGBO(
-                                        0,
-                                        0,
-                                        0,
-                                        0.16,
-                                      ), // Softer shadow for a sleeker look
+                                      color: Color.fromRGBO(0, 0, 0, 0.16),
                                       blurRadius: 8,
                                       spreadRadius: 3,
                                     ),
@@ -150,8 +154,8 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                                 ),
                                 child: IconButton(
                                   icon: Icon(
-                                    Icons.more_vert, // Vertical three-dot icon
-                                    color: Colors.white,
+                                    Icons.more_vert,
+                                    color: AppColors.text,
                                     size: 32,
                                   ),
                                   padding: EdgeInsets.all(10),
@@ -162,7 +166,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                                         renderBox.localToGlobal(Offset.zero) +
                                         Offset(
                                           renderBox.size.width,
-                                          renderBox.size.height * 0.1,
+                                          renderBox.size.height * 0.08,
                                         );
 
                                     _showPopupMenu(context, offset);

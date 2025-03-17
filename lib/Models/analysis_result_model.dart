@@ -1,6 +1,7 @@
 import 'package:aws_dynamodb_api/dynamodb-2012-08-10.dart';
 
 class AnalysisResult {
+  final String user;
   final String id;
   final String text;
   final String language;
@@ -13,6 +14,7 @@ class AnalysisResult {
   createdAt; // createdAt is given with AWS Lambda at time of saving to DynamoDB
 
   AnalysisResult({
+    required this.user,
     required this.id,
     required this.text,
     required this.language,
@@ -26,6 +28,7 @@ class AnalysisResult {
 
   factory AnalysisResult.fromDynamoDB(Map<String, AttributeValue> data) {
     return AnalysisResult(
+      user: data['user']?.s ?? '',
       id: data['id']?.s ?? '',
       text: data['Text']?.s ?? '',
       language: data['Language']?.s ?? '',
@@ -48,6 +51,7 @@ class AnalysisResult {
 
   Map<String, AttributeValue> toDynamoDB() {
     return {
+      'user': AttributeValue(s: user),
       'id': AttributeValue(s: id),
       'Text': AttributeValue(s: text),
       'Language': AttributeValue(s: language),

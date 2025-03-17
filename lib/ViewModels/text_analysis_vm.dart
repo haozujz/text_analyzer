@@ -15,22 +15,27 @@ class TextAnalysisState {
   final String text;
   final AnalysisResult? analysisResult;
   final bool isLoading;
+  final bool isTextAnalysisVisible;
 
   TextAnalysisState({
     this.text = '...',
     this.analysisResult,
     this.isLoading = false,
+    this.isTextAnalysisVisible = true,
   });
 
   TextAnalysisState copyWith({
     String? text,
     AnalysisResult? analysisResult,
     bool? isLoading,
+    bool? isTextAnalysisVisible,
   }) {
     return TextAnalysisState(
       text: text ?? this.text,
       analysisResult: analysisResult,
       isLoading: isLoading ?? this.isLoading,
+      isTextAnalysisVisible:
+          isTextAnalysisVisible ?? this.isTextAnalysisVisible,
     );
   }
 }
@@ -113,21 +118,10 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
       'Mixed': body['sentiment']?['SentimentScores']?['Mixed'] ?? 0.0,
     };
 
-    // Access entity_sentiments
     List<Map<String, dynamic>> entitySentiments =
         List<Map<String, dynamic>>.from(body['entity_sentiments'] ?? []);
 
-    // Access key_phrases
     List<String> keyPhrases = List<String>.from(body['key_phrases'] ?? []);
-
-    // Output values
-
-    // print('Text: $text');
-    // print('Language: $language');
-    // print('Sentiment: $sentiment');
-    // print('Sentiment Scores: $sentimentScores');
-    // print('Entity Sentiments: $entitySentiments');
-    // print('Key Phrases: $keyPhrases');
 
     SentimentAnalysis newSentiment = SentimentAnalysis(
       sentiment: sentiment.toLowerCase(),
@@ -149,6 +143,7 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
     }
 
     AnalysisResult x = AnalysisResult(
+      user: 'user',
       id: Uuid().v4(),
       text: text,
       language: language,
@@ -159,7 +154,14 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
 
     state = state.copyWith(analysisResult: x);
   }
+
+  void toggleTextAnalysis([bool? isVisible]) {
+    state = state.copyWith(
+      isTextAnalysisVisible: isVisible ?? !state.isTextAnalysisVisible,
+    );
+  }
 }
+
 //   void interpretTextAnalysis(String resp) {
 
 //   //   final responseJson = '''{

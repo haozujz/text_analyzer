@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../Utilities/constants.dart';
 //import '../Views/mini_donut_chart.dart';
-import '../Models/analysis_result_model.dart';
+import '../../Models/analysis_result_model.dart';
 
 class EntityInfoItem extends StatelessWidget {
   final List<EntitySentiment> entities;
@@ -43,7 +44,7 @@ class EntityInfoItem extends StatelessWidget {
           SizedBox(height: 4),
           Stack(
             alignment: Alignment.centerRight,
-            children: [Container(width: 30, height: 2, color: Colors.white)],
+            children: [Container(width: 30, height: 2, color: AppColors.text)],
           ),
           SizedBox(height: 26),
 
@@ -63,7 +64,7 @@ class EntityInfoItem extends StatelessWidget {
                       child: Text(
                         entities[i].text,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: AppColors.text,
                           fontSize: 14,
                           fontFamily: 'SF Pro Text',
                         ),

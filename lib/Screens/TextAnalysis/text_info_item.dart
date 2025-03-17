@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../Utilities/constants.dart';
 
 class TextInfoItem extends StatelessWidget {
   final String text;
@@ -23,7 +24,7 @@ class TextInfoItem extends StatelessWidget {
           // Title with underline starting from the right
           RichText(
             text: TextSpan(
-              style: TextStyle(fontSize: 16, color: Colors.white),
+              style: TextStyle(fontSize: 16, color: AppColors.text),
               children: [
                 TextSpan(
                   text: "TEXT ",
@@ -47,7 +48,7 @@ class TextInfoItem extends StatelessWidget {
                 width:
                     30, // Adjust this to make the underline shorter or longer
                 height: 2,
-                color: Colors.white,
+                color: AppColors.text,
               ),
             ],
           ),
@@ -63,7 +64,7 @@ class TextInfoItem extends StatelessWidget {
             child: Text(
               text,
               style: TextStyle(
-                color: Colors.white,
+                color: AppColors.text,
                 fontSize: 14,
                 fontFamily: 'SF Pro Text',
               ),

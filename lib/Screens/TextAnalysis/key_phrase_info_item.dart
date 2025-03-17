@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../Utilities/constants.dart';
 
 class KeyPhraseInfoItem extends StatelessWidget {
   final List<String> keyPhrases;
@@ -41,7 +42,7 @@ class KeyPhraseInfoItem extends StatelessWidget {
           SizedBox(height: 4),
           Stack(
             alignment: Alignment.centerRight,
-            children: [Container(width: 30, height: 2, color: Colors.white)],
+            children: [Container(width: 30, height: 2, color: AppColors.text)],
           ),
           SizedBox(height: 26),
           Column(
@@ -57,7 +58,7 @@ class KeyPhraseInfoItem extends StatelessWidget {
                   child: Text(
                     keyPhrases[i],
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppColors.text,
                       fontSize: 14,
                       fontFamily: 'SF Pro Text',
                     ),

@@ -4,8 +4,8 @@ import 'sentiment_info_item.dart';
 import 'entity_info_item.dart';
 import 'key_phrase_info_item.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../ViewModels/text_analysis_vm.dart';
-import '../ViewModels/camera_vm.dart';
+import '../../ViewModels/text_analysis_vm.dart';
+import '../../ViewModels/camera_vm.dart';
 import 'package:flutter/cupertino.dart';
 
 class TextAnalysisTray extends ConsumerWidget {

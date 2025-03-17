@@ -29,6 +29,20 @@ class CameraService {
 
   CameraController? get controller => _controller;
 
+  void stop() {
+    _controller?.dispose();
+    _controller = null;
+  }
+
+  // Future<void> resume() async {
+  //   if (_controller == null) {
+  //     await initializeCamera(); // Reinitialize the camera if it's stopped
+  //   } else if (!_controller!.value.isInitialized) {
+  //     await _controller!
+  //         .initialize(); // Initialize if the controller exists but is not initialized
+  //   }
+  // }
+
   void dispose() {
     _controller?.dispose();
   }

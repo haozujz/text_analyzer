@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../Utilities/constants.dart';
 
 class PhotoPreview extends StatelessWidget {
   final String imagePath;
@@ -19,7 +20,7 @@ class PhotoPreview extends StatelessWidget {
                 ? Image.file(File(imagePath), width: double.infinity)
                 : const Text(
                   "No image available",
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: AppColors.text),
                 ),
       ),
     );

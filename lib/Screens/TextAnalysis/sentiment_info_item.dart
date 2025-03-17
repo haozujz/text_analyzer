@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../Views/donut_chart.dart';
-import '../Models/analysis_result_model.dart';
+import '../../Utilities/constants.dart';
+import '../../Views/donut_chart.dart';
+import '../../Models/analysis_result_model.dart';
 
 class SentimentInfoItem extends StatelessWidget {
   final SentimentAnalysis? sentimentAnalysis;
@@ -71,7 +72,7 @@ class SentimentInfoItem extends StatelessWidget {
                 width:
                     30, // Adjust this to make the underline shorter or longer
                 height: 2,
-                color: Colors.white,
+                color: AppColors.text,
               ),
             ],
           ),
@@ -158,7 +159,10 @@ class SentimentInfoItem extends StatelessWidget {
                           ),
                         ),
                         SizedBox(width: 8),
-                        Text('Positive', style: TextStyle(color: Colors.white)),
+                        Text(
+                          'Positive',
+                          style: TextStyle(color: AppColors.text),
+                        ),
                       ],
                     ),
                     SizedBox(height: 8),
@@ -206,7 +210,7 @@ class SentimentInfoItem extends StatelessWidget {
                           ),
                         ),
                         SizedBox(width: 8),
-                        Text('Mixed', style: TextStyle(color: Colors.white)),
+                        Text('Mixed', style: TextStyle(color: AppColors.text)),
                       ],
                     ),
 

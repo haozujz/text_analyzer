@@ -2,7 +2,16 @@
 // import 'package:uuid/uuid.dart';
 // import '../Models/analysis_result_model.dart';
 
-class AnalysisRepository {
+class AnalysisResultRepository {
+  // Future<AnalysisResult> getAnalysisResult(String textInput) async {
+  //   final rawData = await networkService.getTextAnalysis(textInput: textInput);
+
+  //   // Transform raw data to AnalysisResult model
+  //   return AnalysisResult.fromJson(rawData);
+  // }
+}
+
+
   // Fetch text analysis from Lambda
   // Future<AnalysisResult> getTextAnalysis(String textInput) async {
   //   final rawData = await networkService.getTextAnalysis(textInput: textInput);
@@ -10,4 +19,3 @@ class AnalysisRepository {
   //   // Transform raw data to AnalysisResult model
   //   return AnalysisResult.fromJson(rawData);
   // }
-}

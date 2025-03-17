@@ -89,6 +89,15 @@ class CameraViewModel extends StateNotifier<CameraState> {
     LoggerService().info('Image path set to picked image: ${state.imagePath}');
   }
 
+  void stopCamera() {
+    _cameraService.stop();
+    state = state.copyWith(isCameraInitialized: false);
+  }
+
+  // void resumeCamera() {
+  //   _cameraService.resume();
+  // }
+
   @override
   void dispose() {
     _cameraService.dispose();

@@ -1,11 +1,13 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../Utilities/constants.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../Screens/camera_screen.dart';
 import '../ViewModels/camera_vm.dart';
 import '../ViewModels/text_analysis_vm.dart';
-import 'text_analysis_tray.dart';
-import 'login_screen.dart';
+import 'TextAnalysis/text_analysis_tray.dart';
 
 // import 'package:photo_manager/photo_manager.dart';
 // import 'dart:io';
@@ -72,14 +74,12 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
     final cameraState = ref.watch(cameraViewModelProvider);
     final cameraViewModel = ref.read(cameraViewModelProvider.notifier);
 
-    //final textAnalysisState = ref.watch(textAnalysisViewModelProvider);
     final textAnalysisViewModel = ref.read(
       textAnalysisViewModelProvider.notifier,
     );
 
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    // Define fixed pixel heights
     final double inactiveTrayHeightPx = 168;
     final double activeTrayHeightPx = 400;
     final double maxTrayHeightPx = 700;
@@ -121,36 +121,24 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // CameraPreview at the back
           Positioned.fill(child: CameraScreen()),
 
-          // Floating capture button above the 'controls' rectangle
-          if (cameraState.imagePath.isEmpty)
+          if (cameraState.isCameraInitialized && cameraState.imagePath.isEmpty)
             Positioned(
               bottom: 190,
               left: (MediaQuery.of(context).size.width - 82) / 2,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Large semi-transparent white circle around the button
                   Container(
-                    width: 82, // Diameter of the concentric circle
+                    width: 82,
                     height: 82,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color.fromRGBO(
-                        255,
-                        255,
-                        255,
-                        0.3,
-                      ), // Semi-transparent white fill
-                      border: Border.all(
-                        color: Colors.white,
-                        width: 2, // Thickness of the white border
-                      ),
+                      color: Color.fromRGBO(255, 255, 255, 0.3),
+                      border: Border.all(color: Colors.white, width: 2),
                     ),
                   ),
-                  // Floating button in the center
                   ElevatedButton(
                     onPressed: () async {
                       await cameraViewModel.takePicture();
@@ -158,7 +146,7 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
                     style: ElevatedButton.styleFrom(
                       shape: CircleBorder(),
                       padding: EdgeInsets.all(36),
-                      backgroundColor: Colors.white,
+                      backgroundColor: AppColors.text,
                     ),
                     child: null,
                   ),
@@ -166,7 +154,35 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
               ),
             ),
 
-          SignOutButton(),
+          if (cameraState.imagePath.isEmpty)
+            Positioned(
+              top: 20,
+              left: 10,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromRGBO(0, 0, 0, 0),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color.fromRGBO(0, 0, 0, 0.16),
+                      blurRadius: 8,
+                      spreadRadius: 4,
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    CupertinoIcons.chevron_back,
+                    color: AppColors.text,
+                    size: 32,
+                  ),
+                  padding: EdgeInsets.all(10), // Ensures a large tap target
+                  onPressed: () {
+                    textAnalysisViewModel.toggleTextAnalysis();
+                  },
+                ),
+              ),
+            ),
 
           if (cameraState.imagePath.isEmpty)
             Positioned(
@@ -190,7 +206,7 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
                   },
                   icon: Icon(
                     Icons.photo_library,
-                    color: Colors.white,
+                    color: AppColors.text,
                     size: 28,
                   ),
                   padding: EdgeInsets.all(12),
