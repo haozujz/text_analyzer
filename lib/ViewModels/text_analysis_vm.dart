@@ -150,6 +150,9 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
       sentiment: newSentiment,
       entities: newEntitySentiments,
       keyPhrases: keyPhrases,
+      imageId: '',
+      imagePath: '',
+      createdAt: DateTime.now().toUtc(),
     );
 
     state = state.copyWith(analysisResult: x);
@@ -161,6 +164,15 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
     );
   }
 }
+
+
+// {
+//     "body": "{\"user\": \"123user\", \"id\": \"123id\", \"text\": \"This is a test text\", \"language\": \"en\", \"sentiment\": {\"Sentiment\": \"POSITIVE\", \"Positive\": 0.9, \"Negative\": 0.05, \"Neutral\": 0.05, \"Mixed\": 0.0}, \"entities\": [{\"Text\": \"entity1\", \"Type\": \"PERSON\", \"Sentiment\": \"POSITIVE\"}], \"keyPhrases\": [\"keyphrase1\", \"keyphrase2\"], \"imageId\": \"img123\", \"imagePath\": \"/images/img123.jpg\"}"
+// }
+
+
+
+
 
 //   void interpretTextAnalysis(String resp) {
 

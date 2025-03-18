@@ -67,3 +67,148 @@ class NetworkService {
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+// import json
+// import boto3
+// from botocore.exceptions import ClientError
+
+// dynamodb = boto3.resource('dynamodb')
+// table = dynamodb.Table('AnalysisResults')
+
+// def lambda_handler(event, context):
+//     try:
+//         # Parse input
+//         user = event['user']
+//         id = event['id']
+//         text = event['text']
+//         language = event['language']
+//         sentiment = event['sentiment']
+//         entities = event['entities']
+//         keyPhrases = event['keyPhrases']
+//         imageId = event.get('imageId', None)
+//         imagePath = event.get('imagePath', None)
+//         createdAt = event['createdAt']
+
+//         # Create item
+//         response = table.put_item(
+//             Item={
+//                 'user': user,
+//                 'id': id,
+//                 'Text': text,
+//                 'Language': language,
+//                 'Sentiment': sentiment,
+//                 'EntitySentiments': entities,
+//                 'KeyPhrases': keyPhrases,
+//                 'ImageId': imageId,
+//                 'ImagePath': imagePath,
+//                 'CreatedAt': createdAt
+//             }
+//         )
+//         return {
+//             'statusCode': 200,
+//             'body': json.dumps('Item created successfully')
+//         }
+
+//     except ClientError as e:
+//         print(f"Error creating item: {e.response['Error']['Message']}")
+//         return {
+//             'statusCode': 500,
+//             'body': json.dumps(f"Error creating item: {e.response['Error']['Message']}")
+//         }
+
+
+
+
+
+// import json
+// import boto3
+// from botocore.exceptions import ClientError
+
+// dynamodb = boto3.resource('dynamodb')
+// table = dynamodb.Table('AnalysisResults')
+
+// def lambda_handler(event, context):
+//     try:
+//         # Extract user and id from the event
+//         user = event['user']
+//         id = event['id']
+
+//         # Delete item
+//         response = table.delete_item(
+//             Key={
+//                 'user': user,
+//                 'id': id
+//             }
+//         )
+        
+//         if 'Attributes' in response:
+//             return {
+//                 'statusCode': 200,
+//                 'body': json.dumps('Item deleted successfully')
+//             }
+//         else:
+//             return {
+//                 'statusCode': 404,
+//                 'body': json.dumps('Item not found')
+//             }
+        
+//     except ClientError as e:
+//         print(f"Error deleting item: {e.response['Error']['Message']}")
+//         return {
+//             'statusCode': 500,
+//             'body': json.dumps(f"Error deleting item: {e.response['Error']['Message']}")
+//         }
+
+
+
+
+
+
+// import json
+// import boto3
+// from botocore.exceptions import ClientError
+
+// dynamodb = boto3.resource('dynamodb')
+// table = dynamodb.Table('AnalysisResults')
+
+// def lambda_handler(event, context):
+//     try:
+//         # Extract user from the event
+//         user = event['user']
+
+//         # Query DynamoDB by user (partition key)
+//         response = table.query(
+//             KeyConditionExpression=boto3.dynamodb.conditions.Key('user').eq(user)
+//         )
+        
+//         items = response.get('Items', [])
+        
+//         if items:
+//             return {
+//                 'statusCode': 200,
+//                 'body': json.dumps(items)
+//             }
+//         else:
+//             return {
+//                 'statusCode': 404,
+//                 'body': json.dumps('No items found for this user')
+//             }
+        
+//     except ClientError as e:
+//         print(f"Error querying items: {e.response['Error']['Message']}")
+//         return {
+//             'statusCode': 500,
+//             'body': json.dumps(f"Error querying items: {e.response['Error']['Message']}")
+//         }
+
+
+
