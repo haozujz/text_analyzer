@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nlp_flutter/Services/logger_service.dart';
+// import 'package:nlp_flutter/Services/logger_service.dart';
 import '../ViewModels/auth_vm.dart';
 import '../ViewModels/camera_vm.dart';
 import 'Screens/text_analysis_screen.dart';
@@ -29,9 +29,9 @@ class BaseViewState extends ConsumerState<BaseView> {
   @override
   Widget build(BuildContext context) {
     final textAnalysisState = ref.watch(textAnalysisViewModelProvider);
-    final textAnalysisViewModel = ref.read(
-      textAnalysisViewModelProvider.notifier,
-    );
+    // final textAnalysisViewModel = ref.read(
+    //   textAnalysisViewModelProvider.notifier,
+    // );
     final authState = ref.watch(authViewModelProvider);
     final cameraViewModel = ref.read(cameraViewModelProvider.notifier);
 

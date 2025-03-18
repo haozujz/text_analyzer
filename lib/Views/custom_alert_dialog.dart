@@ -9,14 +9,14 @@ class CustomAlertDialog extends StatelessWidget {
   final VoidCallback? onButtonPressed;
 
   const CustomAlertDialog({
-    Key? key,
+    super.key,
     required this.title,
     required this.message,
     required this.buttonText,
     required this.textColor,
     required this.bgColor,
     this.onButtonPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

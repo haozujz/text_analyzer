@@ -10,8 +10,7 @@ class AnalysisResult {
   final List<String> keyPhrases;
   final String imageId; // For AWS s3
   final String imagePath; // For local imagePath
-  final DateTime
-  createdAt; // createdAt is given with AWS Lambda at time of saving to DynamoDB
+  final DateTime createdAt;
 
   AnalysisResult({
     required this.user,
@@ -25,6 +24,21 @@ class AnalysisResult {
     required this.imagePath,
     required this.createdAt,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'user': user,
+      'id': id,
+      'text': text,
+      'language': language,
+      'sentiment': sentiment.toJson(),
+      'entities': entities.map((e) => e.toJson()).toList(),
+      'keyPhrases': keyPhrases,
+      'imageId': imageId,
+      'imagePath': imagePath,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
 
   factory AnalysisResult.fromDynamoDB(Map<String, AttributeValue> data) {
     return AnalysisResult(
@@ -93,6 +107,16 @@ class SentimentAnalysis {
     required this.mixed,
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'sentiment': sentiment,
+      'positive': positive,
+      'negative': negative,
+      'neutral': neutral,
+      'mixed': mixed,
+    };
+  }
+
   factory SentimentAnalysis.fromDynamoDB(
     Map<String, AttributeValue> sentiment,
   ) {
@@ -126,6 +150,10 @@ class EntitySentiment {
     required this.type,
     required this.sentiment,
   });
+
+  Map<String, dynamic> toJson() {
+    return {'text': text, 'type': type, 'sentiment': sentiment};
+  }
 
   factory EntitySentiment.fromDynamoDB(Map<String, AttributeValue> entity) {
     return EntitySentiment(

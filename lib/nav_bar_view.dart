@@ -9,10 +9,10 @@ class TabView extends ConsumerStatefulWidget {
   const TabView({super.key});
 
   @override
-  _TabViewState createState() => _TabViewState();
+  TabViewState createState() => TabViewState();
 }
 
-class _TabViewState extends ConsumerState<TabView> {
+class TabViewState extends ConsumerState<TabView> {
   int _selectedIndex = 0;
 
   void _onTabChanged(int index) {

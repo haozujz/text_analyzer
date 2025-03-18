@@ -87,6 +87,11 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
         textInput: modifiedText,
       );
       LoggerService().info("Network Response: $result");
+
+      //
+      await NetworkService().postAnalysisResult();
+      //
+
       return result;
     } catch (e) {
       if (e is NetworkError) {
