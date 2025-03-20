@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nlp_flutter/Services/network_service.dart';
-// import 'package:nlp_flutter/appsync.dart';
-// import 'package:nlp_flutter/Services/logger_service.dart';
 import '../ViewModels/auth_vm.dart';
 import '../ViewModels/camera_vm.dart';
 import 'Screens/text_analysis_screen.dart';
