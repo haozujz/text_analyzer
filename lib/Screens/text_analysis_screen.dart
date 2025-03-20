@@ -1,6 +1,7 @@
 // import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nlp_flutter/ViewModels/auth_vm.dart';
 import '../Utilities/constants.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,6 +74,7 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
   Widget build(BuildContext context) {
     final cameraState = ref.watch(cameraViewModelProvider);
     final cameraViewModel = ref.read(cameraViewModelProvider.notifier);
+    final authState = ref.read(authViewModelProvider);
 
     final textAnalysisViewModel = ref.read(
       textAnalysisViewModelProvider.notifier,
@@ -102,7 +104,12 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
           curve: Curves.easeInOut,
         );
 
-        textAnalysisViewModel.onPhotoChange(next.imagePath);
+        if (authState.user != null) {
+          textAnalysisViewModel.onPhotoChange(
+            next.imagePath,
+            authState.user ?? '',
+          );
+        }
       }
     });
 

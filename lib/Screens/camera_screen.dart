@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nlp_flutter/ViewModels/text_analysis_vm.dart';
+import '../Services/network_service.dart';
 import '../Utilities/constants.dart';
+import '../ViewModels/auth_vm.dart';
 import '../ViewModels/camera_vm.dart';
 import '../Services/logger_service.dart';
 import 'photo_preview.dart';
@@ -41,6 +44,26 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   Widget build(BuildContext context) {
     final cameraState = ref.watch(cameraViewModelProvider);
     final cameraViewModel = ref.read(cameraViewModelProvider.notifier);
+    //final authState = ref.read(authViewModelProvider);
+    //final textAnalysisState = ref.read(textAnalysisViewModelProvider);
+    final textAnalysisViewModel = ref.read(
+      textAnalysisViewModelProvider.notifier,
+    );
+
+    Future<void> onSaveTapped() async {
+      try {
+        await textAnalysisViewModel.postAnalysisResult();
+        LoggerService().info("Saved new analysis result to the database");
+      } catch (e) {
+        if (e is NetworkError) {
+          LoggerService().error(
+            "Network error calling AWS Lambda: ${e.message}",
+          );
+        } else {
+          LoggerService().error("Network Error calling AWS Lambda: $e");
+        }
+      }
+    }
 
     return PopScope(
       canPop: cameraState.imagePath.isEmpty,
@@ -169,7 +192,11 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                                           renderBox.size.height * 0.08,
                                         );
 
-                                    _showPopupMenu(context, offset);
+                                    _showPopupMenu(
+                                      context,
+                                      offset,
+                                      onSaveTapped,
+                                    );
                                   },
                                 ),
                               ),
@@ -184,7 +211,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   }
 }
 
-void _showPopupMenu(BuildContext context, Offset position) {
+void _showPopupMenu(BuildContext context, Offset position, VoidCallback onTap) {
   final RenderBox overlay =
       Overlay.of(context).context.findRenderObject() as RenderBox;
 
@@ -197,14 +224,39 @@ void _showPopupMenu(BuildContext context, Offset position) {
     ),
     items: [
       PopupMenuItem(
+        onTap: onTap,
         child: Text(
           "Save",
           style: TextStyle(color: Colors.white),
-        ), // White text for dark mode
-        onTap: () => LoggerService().info("Save clicked"),
+        ), // Use the passed function
       ),
     ],
     color: Colors.grey[900], // Dark background
     elevation: 4,
   );
 }
+
+// void _showPopupMenu(BuildContext context, Offset position) {
+//   final RenderBox overlay =
+//       Overlay.of(context).context.findRenderObject() as RenderBox;
+
+//   showMenu(
+//     context: context,
+//     position: RelativeRect.fromRect(
+//       Rect.fromLTWH(position.dx, position.dy, 0, 0), // Correctly position it
+//       Offset.zero &
+//           overlay.size, // Ensure menu appears within the screen bounds
+//     ),
+//     items: [
+//       PopupMenuItem(
+//         child: Text(
+//           "Save",
+//           style: TextStyle(color: Colors.white),
+//         ), // White text for dark mode
+//         onTap: () => LoggerService().info("Save clicked"),
+//       ),
+//     ],
+//     color: Colors.grey[900], // Dark background
+//     elevation: 4,
+//   );
+// }

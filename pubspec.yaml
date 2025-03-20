@@ -59,8 +59,12 @@ dependencies:
   amplify_auth_cognito: ^2.6.1
   amplify_authenticator: ^2.3.3
   amplify_storage_s3: ^2.6.1
-  amplify_api: ^2.6.1
+  # amplify_api: ^2.6.1
   amplify_datastore: ^2.6.1
+
+  graphql_flutter: ^5.0.0
+
+  web_socket_channel: ^2.0.0
 
 dev_dependencies:
   flutter_test:

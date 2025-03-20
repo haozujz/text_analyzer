@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nlp_flutter/Services/network_service.dart';
+// import 'package:nlp_flutter/appsync.dart';
 // import 'package:nlp_flutter/Services/logger_service.dart';
 import '../ViewModels/auth_vm.dart';
 import '../ViewModels/camera_vm.dart';
 import 'Screens/text_analysis_screen.dart';
 import 'Screens/Authentication/login_screen.dart';
 import '../Views/custom_alert_dialog.dart';
+import 'Services/websocket.dart';
 import 'Utilities/constants.dart';
 import 'ViewModels/text_analysis_vm.dart';
 import 'nav_bar_view.dart';
@@ -46,11 +49,7 @@ class BaseViewState extends ConsumerState<BaseView> {
             cameraViewModel.stopCamera();
           } else {
             Future.microtask(() {
-              // if (!ref.watch(cameraViewModelProvider).isCameraInitialized) {
               ref.read(cameraViewModelProvider.notifier).initializeCamera();
-              // } else {
-              // ref.read(cameraViewModelProvider.notifier).resumeCamera();
-              // }
             });
           }
         });
@@ -76,6 +75,19 @@ class BaseViewState extends ConsumerState<BaseView> {
                 Navigator.of(context).pop();
               },
             );
+          }
+
+          if (next.user != null) {
+            // Connect to the WebSocket server
+            WebSocketService().connect();
+
+            // Send a message to the server
+            //WebSocketService().sendMessage('Hello WebSocket!');
+
+            // Disconnect after some time (for example, after 5 seconds)
+            // Future.delayed(Duration(seconds: 60), () {
+            //   WebSocketService().disconnect();
+            // });
           }
         });
 

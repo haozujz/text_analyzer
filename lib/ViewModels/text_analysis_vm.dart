@@ -43,7 +43,7 @@ class TextAnalysisState {
 class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
   TextAnalysisViewModel() : super(TextAnalysisState());
 
-  void onPhotoChange(String imagePath) async {
+  void onPhotoChange(String imagePath, String user) async {
     state = state.copyWith(text: '...');
 
     if (imagePath.isEmpty) {
@@ -71,7 +71,7 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
 
     if (state.text.isNotEmpty && state.text != '...') {
       var resp = await getTextAnalysisJSON();
-      interpretTextAnalysisJSON(resp);
+      interpretTextAnalysisJSON(resp, user);
     }
   }
 
@@ -88,10 +88,6 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
       );
       LoggerService().info("Network Response: $result");
 
-      //
-      await NetworkService().postAnalysisResult();
-      //
-
       return result;
     } catch (e) {
       if (e is NetworkError) {
@@ -103,7 +99,7 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
     }
   }
 
-  void interpretTextAnalysisJSON(Map<String, dynamic> body) {
+  void interpretTextAnalysisJSON(Map<String, dynamic> body, String user) {
     if (body.isEmpty) {
       LoggerService().error('Error: Response is empty');
       return;
@@ -148,7 +144,7 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
     }
 
     AnalysisResult x = AnalysisResult(
-      user: 'user',
+      user: user,
       id: Uuid().v4(),
       text: text,
       language: language,
@@ -167,6 +163,26 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
     state = state.copyWith(
       isTextAnalysisVisible: isVisible ?? !state.isTextAnalysisVisible,
     );
+  }
+
+  Future<void> postAnalysisResult() async {
+    try {
+      if (state.analysisResult != null) {
+        await NetworkService().postAnalysisResult(state.analysisResult!);
+      } else {
+        throw NetworkError.unknown;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> fetchAnalysisResult(String user) async {
+    try {
+      await NetworkService().fetchAnalysisResult(user);
+    } catch (e) {
+      rethrow;
+    }
   }
 }
 

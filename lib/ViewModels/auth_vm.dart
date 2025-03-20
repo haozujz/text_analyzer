@@ -162,7 +162,7 @@ class AuthViewModel extends StateNotifier<AuthState>
         );
       }
     } else {
-      state = state.copyWith(isSignedIn: isSignedIn, error: error);
+      state = state.copyWith(isSignedIn: isSignedIn, error: error, user: null);
     }
   }
 
