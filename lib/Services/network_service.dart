@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 //import 'package:aws_dynamodb_api/dynamodb-2012-08-10.dart';
 import 'package:http/http.dart' as http;
-import 'package:nlp_flutter/Services/logger_service.dart';
 import 'dart:convert';
 
 import '../Models/analysis_result_model.dart';
@@ -109,14 +108,12 @@ class NetworkService {
     }
   }
 
-  Future<Map<String, dynamic>> fetchAnalysisResult(String user) async {
+  Future<Map<String, dynamic>> fetchAnalysisResults(String user) async {
     try {
       final response = await http.get(
         Uri.parse('${baseUrl}results_db?user=$user'),
         headers: {'Content-Type': 'application/json'},
       );
-
-      LoggerService().info(response.body);
 
       switch (response.statusCode) {
         case 200:

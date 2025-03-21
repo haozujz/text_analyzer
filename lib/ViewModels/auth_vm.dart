@@ -81,26 +81,6 @@ class AuthViewModel extends StateNotifier<AuthState>
     }
   }
 
-  // Future<void> printUser() async {
-  //   try {
-  //     final authUser = await Amplify.Auth.getCurrentUser();
-  //     print("User Object: $authUser");
-  //   } catch (e) {
-  //     print("Error fetching user: $e");
-  //   }
-  // }
-
-  // Future<void> printUserAttributes() async {
-  //   try {
-  //     final attributes = await Amplify.Auth.fetchUserAttributes();
-  //     for (var attr in attributes) {
-  //       print("User Object att: ${attr.userAttributeKey.key}: ${attr.value}");
-  //     }
-  //   } catch (e) {
-  //     print("Error fetching user attributes: $e");
-  //   }
-  // }
-
   Future<Map<String, String>> getUserEmailAndSub() async {
     try {
       final attributes = await Amplify.Auth.fetchUserAttributes();
@@ -229,6 +209,10 @@ class AuthViewModel extends StateNotifier<AuthState>
 
   void clearError() {
     state = state.copyWith(error: null);
+  }
+
+  void showMessageOnly(String message) {
+    state = state.copyWith(error: message);
   }
 
   @override

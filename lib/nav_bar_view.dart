@@ -2,6 +2,8 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nlp_flutter/Screens/listResultsScreen.dart';
+import 'Services/websocket.dart';
 import 'Utilities/constants.dart';
 import 'ViewModels/text_analysis_vm.dart';
 
@@ -56,18 +58,23 @@ class TabViewState extends ConsumerState<TabView> {
       ),
       body:
           _selectedIndex == 0
-              ? Center(
-                child: ElevatedButton(
-                  onPressed: textAnalysisViewModel.toggleTextAnalysis,
-                  child: const Text("Toggle"),
-                ),
-              )
-              : ElevatedButton(
-                onPressed: () async {
-                  await Amplify.Auth.signOut();
-                },
-                child: const Text("Sign Out"),
+              ? ListResultsScreen()
+              : Stack(
+                children: [
+                  // Other widgets that should be in the Stack go here
+                  ElevatedButton(
+                    onPressed: WebSocketService().connect,
+                    child: const Text("Toggle"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await Amplify.Auth.signOut();
+                    },
+                    child: const Text("Sign Out"),
+                  ),
+                ],
               ),
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onTabChanged,

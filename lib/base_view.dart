@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nlp_flutter/Monitors/network_monitor.dart';
+import 'package:nlp_flutter/Monitors/screen_monitor.dart';
+import 'package:nlp_flutter/Services/logger_service.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../ViewModels/auth_vm.dart';
 import '../ViewModels/camera_vm.dart';
 import 'Screens/text_analysis_screen.dart';
@@ -18,22 +22,51 @@ class BaseView extends ConsumerStatefulWidget {
   BaseViewState createState() => BaseViewState();
 }
 
-class BaseViewState extends ConsumerState<BaseView> {
+class BaseViewState extends ConsumerState<BaseView>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    ref.read(cameraViewModelProvider.notifier).initializeCamera();
+    NetworkMonitor().startListening();
+    ScreenMonitor().startListening();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // The app is in the foreground
+      WebSocketService().connect();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final textAnalysisState = ref.watch(textAnalysisViewModelProvider);
-    // final textAnalysisViewModel = ref.read(
-    //   textAnalysisViewModelProvider.notifier,
-    // );
+    final textAnalysisViewModel = ref.read(
+      textAnalysisViewModelProvider.notifier,
+    );
     final authState = ref.watch(authViewModelProvider);
     final cameraViewModel = ref.read(cameraViewModelProvider.notifier);
+
+    Future<void> initializeCamera() async {
+      final cameraPermission = await Permission.camera.request();
+
+      if (cameraPermission.isGranted) {
+        // Proceed with initializing the camera
+        ref.read(cameraViewModelProvider.notifier).initializeCamera();
+      } else if (cameraPermission.isDenied) {
+        // Permission denied but not permanently, ask again
+        LoggerService().error(
+          "Camera permission denied. Please grant permission.",
+        );
+      } else if (cameraPermission.isPermanentlyDenied) {
+        // Open app settings for the user to enable manually
+        LoggerService().error(
+          "Camera permission permanently denied. Opening app settings...",
+        );
+      }
+    }
 
     return Consumer(
       builder: (context, ref, child) {
@@ -46,7 +79,7 @@ class BaseViewState extends ConsumerState<BaseView> {
             cameraViewModel.stopCamera();
           } else {
             Future.microtask(() {
-              ref.read(cameraViewModelProvider.notifier).initializeCamera();
+              initializeCamera();
             });
           }
         });
@@ -74,24 +107,23 @@ class BaseViewState extends ConsumerState<BaseView> {
             );
           }
 
-          if (next.user != null) {
-            // Connect to the WebSocket server
+          if (previous?.user != next.user && next.user != null) {
+            textAnalysisViewModel.emptyStoredAnalysisResults();
+            try {
+              await textAnalysisViewModel.fetchAnalysisResults(next.user!);
+            } catch (e) {
+              LoggerService().info('Error fetching analysis results: $e');
+            }
+            // Reconnecting is not always necessary, as this app's dynamoDB item contains connectionId only,
+            // but you must include userId as well if sending userId-specific messages,
+            // hence you will need to update the userId field here
             WebSocketService().connect();
-
-            // Send a message to the server
-            //WebSocketService().sendMessage('Hello WebSocket!');
-
-            // Disconnect after some time (for example, after 5 seconds)
-            // Future.delayed(Duration(seconds: 60), () {
-            //   WebSocketService().disconnect();
-            // });
           }
         });
 
         return authState.isSignedIn
             ? Stack(
               children: [
-                TabView(),
                 Stack(
                   children: [
                     TabView(),

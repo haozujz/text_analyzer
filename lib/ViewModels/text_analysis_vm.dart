@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nlp_flutter/Repos/analysis_result_repo.dart';
 import '../Models/analysis_result_model.dart';
 import 'package:nlp_flutter/Services/logger_service.dart';
 import 'package:nlp_flutter/Services/network_service.dart';
@@ -6,9 +9,19 @@ import '../Services/ocr_service.dart';
 //import 'dart:convert';
 import 'package:uuid/uuid.dart';
 
+import '../Services/websocket.dart';
+
+// Provides an instance of WebSocketService
+final webSocketProvider = Provider((ref) => WebSocketService());
+
+// Provides a stream of messages received from WebSocket
+final webSocketStreamProvider = StreamProvider<String>((ref) {
+  return ref.watch(webSocketProvider).messages;
+});
+
 final textAnalysisViewModelProvider =
     StateNotifierProvider<TextAnalysisViewModel, TextAnalysisState>(
-      (ref) => TextAnalysisViewModel(),
+      (ref) => TextAnalysisViewModel(ref),
     );
 
 class TextAnalysisState {
@@ -16,12 +29,14 @@ class TextAnalysisState {
   final AnalysisResult? analysisResult;
   final bool isLoading;
   final bool isTextAnalysisVisible;
+  final List<AnalysisResult> storedAnalysisResults;
 
   TextAnalysisState({
     this.text = '...',
     this.analysisResult,
     this.isLoading = false,
     this.isTextAnalysisVisible = true,
+    this.storedAnalysisResults = const [],
   });
 
   TextAnalysisState copyWith({
@@ -29,6 +44,7 @@ class TextAnalysisState {
     AnalysisResult? analysisResult,
     bool? isLoading,
     bool? isTextAnalysisVisible,
+    List<AnalysisResult>? storedAnalysisResults,
   }) {
     return TextAnalysisState(
       text: text ?? this.text,
@@ -36,12 +52,46 @@ class TextAnalysisState {
       isLoading: isLoading ?? this.isLoading,
       isTextAnalysisVisible:
           isTextAnalysisVisible ?? this.isTextAnalysisVisible,
+      storedAnalysisResults:
+          storedAnalysisResults ?? this.storedAnalysisResults,
     );
   }
 }
 
 class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
-  TextAnalysisViewModel() : super(TextAnalysisState());
+  final Ref ref;
+
+  TextAnalysisViewModel(this.ref) : super(TextAnalysisState()) {
+    listenToWebSocket();
+  }
+
+  void listenToWebSocket() {
+    final webSocketService = ref.read(webSocketProvider);
+
+    webSocketService.messages.listen((message) {
+      try {
+        final Map<String, dynamic> decodedMessage = jsonDecode(message);
+        if (decodedMessage.containsKey('item')) {
+          AnalysisResult newResult = AnalysisResultRepository()
+              .parseAnalysisResultFromWebSocket(decodedMessage['item']);
+
+          var newList = state.storedAnalysisResults;
+
+          if (decodedMessage.containsKey('action')) {
+            if (decodedMessage['action'] == 'DELETE') {
+              newList.removeWhere((element) => element.id == newResult.id);
+            } else if (decodedMessage['action'] == 'INSERT') {
+              newList.add(newResult);
+            }
+          }
+
+          state = state.copyWith(storedAnalysisResults: newList);
+        }
+      } catch (e) {
+        LoggerService().error("Error parsing WebSocket message: $e");
+      }
+    });
+  }
 
   void onPhotoChange(String imagePath, String user) async {
     state = state.copyWith(text: '...');
@@ -99,6 +149,7 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
     }
   }
 
+  // From AWS Comprehend
   void interpretTextAnalysisJSON(Map<String, dynamic> body, String user) {
     if (body.isEmpty) {
       LoggerService().error('Error: Response is empty');
@@ -177,9 +228,34 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
     }
   }
 
-  Future<void> fetchAnalysisResult(String user) async {
+  Future<void> emptyStoredAnalysisResults() async {
+    state = state.copyWith(storedAnalysisResults: []);
+  }
+
+  Future<void> fetchAnalysisResults(String user) async {
     try {
-      await NetworkService().fetchAnalysisResult(user);
+      var results = await NetworkService().fetchAnalysisResults(user);
+      List<AnalysisResult> parsedResults = [];
+
+      if (results.containsKey('results')) {
+        var items = results['results'];
+        LoggerService().info('Results Data: $items'); // Log the results data
+
+        LoggerService().info('Results Data Count: ${items.length}');
+
+        items.forEach((el) {
+          try {
+            parsedResults.add(
+              AnalysisResultRepository().parseAnalysisResult(el),
+            );
+          } catch (e) {
+            LoggerService().info('Error parsing element: $el');
+            LoggerService().info('Parsing error: $e');
+          }
+        });
+      }
+
+      state = state.copyWith(storedAnalysisResults: parsedResults);
     } catch (e) {
       rethrow;
     }

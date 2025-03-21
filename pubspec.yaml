@@ -65,6 +65,10 @@ dependencies:
   graphql_flutter: ^5.0.0
 
   web_socket_channel: ^2.0.0
+  connectivity_plus: ^6.0.0
+  screen_state: ^4.0.0
+  
+  permission_handler: ^11.0.1
 
 dev_dependencies:
   flutter_test:

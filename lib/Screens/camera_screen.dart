@@ -49,12 +49,15 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     final textAnalysisViewModel = ref.read(
       textAnalysisViewModelProvider.notifier,
     );
+    final authViewModel = ref.read(authViewModelProvider.notifier);
 
     Future<void> onSaveTapped() async {
       try {
         await textAnalysisViewModel.postAnalysisResult();
         LoggerService().info("Saved new analysis result to the database");
       } catch (e) {
+        authViewModel.showMessageOnly("Network Error, please try again.");
+
         if (e is NetworkError) {
           LoggerService().error(
             "Network error calling AWS Lambda: ${e.message}",

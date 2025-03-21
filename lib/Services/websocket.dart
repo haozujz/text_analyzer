@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'logger_service.dart';
 
@@ -6,14 +8,21 @@ class WebSocketService {
   static final WebSocketService _instance = WebSocketService._();
   factory WebSocketService() => _instance;
 
-  // final _channel = WebSocketChannel.connect(
-  //   Uri.parse('wss://jzkpbvgmxk.execute-api.ap-northeast-1.amazonaws.com/dev/'),
-  // );
+  WebSocketChannel? _channel;
 
-  late WebSocketChannel _channel;
+  final StreamController<String> _messageStreamController =
+      StreamController.broadcast();
+  Stream<String> get messages => _messageStreamController.stream;
 
   // Connect to the WebSocket API
   void connect() {
+    disconnect();
+    // Warning: .closeCode may be null even if the connection closed if closure was via network loss
+    // if (_channel != null && _channel?.closeCode == null) {
+    //   LoggerService().info("Websocket connection already open.");
+    //   return;
+    // }
+
     _channel = WebSocketChannel.connect(
       Uri.parse(
         'wss://jzkpbvgmxk.execute-api.ap-northeast-1.amazonaws.com/dev/',
@@ -23,76 +32,26 @@ class WebSocketService {
   }
 
   void listenToMessages() {
-    _channel.stream.listen(
+    _channel?.stream.listen(
       (message) {
-        LoggerService().info("Message received: $message");
+        LoggerService().info("Websocket Message received: $message");
+        _messageStreamController.add(message); // Add message to stream
       },
       onError: (error) {
-        LoggerService().info("Error occurred: $error");
+        LoggerService().info("Websocket Error occurred: $error");
       },
       onDone: () {
-        LoggerService().info("Connection closed.");
+        LoggerService().info("Websocket Connection closed.");
       },
     );
   }
 
   void sendMessage(String message) {
-    _channel.sink.add(message);
+    _channel?.sink.add(message);
   }
 
   // Disconnect the WebSocket
   void disconnect() {
-    _channel.sink.close();
+    _channel?.sink.close();
   }
 }
-
-
-//   RealTimeDataFetcher._();
-//   static final RealTimeDataFetcher _instance = RealTimeDataFetcher._();
-//   factory RealTimeDataFetcher() => _instance;
-
-// Create the WebSocket channel to connect
-// final channel = WebSocketChannel.connect(
-//   Uri.parse('wss://your-websocket-url/dev'),
-// );
-
-// // Listen to the WebSocket stream for messages
-// channel.stream.listen((message) {
-//   print("Message received: $message");
-// });
-
-// // Send a message to the WebSocket server (if needed)
-// channel.sink.add('Hello WebSocket!');
-
-
-
-
-
-// import 'package:web_socket_channel/io.dart';
-// import 'dart:convert';
-
-// final String userId = "123user";  // Replace with actual user ID
-// final channel = IOWebSocketChannel.connect(
-//   'wss://your-websocket-api-id.execute-api.region.amazonaws.com/production'
-// );
-
-// // Send user ID when connecting
-// channel.sink.add(jsonEncode({"action": "connect", "userId": userId}));
-
-
-// channel.stream.listen((message) {
-//   final data = jsonDecode(message);
-  
-//   if (data['type'] == 'INSERT' || data['type'] == 'MODIFY') {
-//     updateUIWithNewObject(data['data']);  // Custom function to update UI
-//   } else if (data['type'] == 'REMOVE') {
-//     removeObjectFromUI(data['data']['id']);  // Handle deletion
-//   }
-// });
-
-// void updateUIWithNewObject(Map<String, dynamic> object) {
-//   print("Updated Object: ${object['text']}");
-//   // Update UI state with new data
-// }
-
-
