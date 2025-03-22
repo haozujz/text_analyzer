@@ -87,7 +87,10 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
             }
           }
 
-          state = state.copyWith(storedAnalysisResults: newList);
+          state = state.copyWith(
+            storedAnalysisResults: newList,
+            analysisResult: state.analysisResult,
+          );
         }
       } catch (e) {
         LoggerService().error("Error parsing WebSocket message: $e");
@@ -96,7 +99,7 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
   }
 
   void onPhotoChange(String imagePath, String user) async {
-    state = state.copyWith(text: '...');
+    state = state.copyWith(text: '...', analysisResult: state.analysisResult);
 
     if (imagePath.isEmpty) {
       return;
@@ -119,11 +122,11 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
       text = '...';
     }
 
-    state = state.copyWith(text: text);
+    state = state.copyWith(text: text, analysisResult: state.analysisResult);
 
     if (state.text.isNotEmpty && state.text != '...') {
       var resp = await getTextAnalysisJSON();
-      interpretTextAnalysisJSON(resp, user);
+      interpretTextAnalysisJSON(resp, user, imagePath);
     }
   }
 
@@ -152,7 +155,11 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
   }
 
   // From AWS Comprehend
-  void interpretTextAnalysisJSON(Map<String, dynamic> body, String user) {
+  void interpretTextAnalysisJSON(
+    Map<String, dynamic> body,
+    String user,
+    String imagePath,
+  ) {
     if (body.isEmpty) {
       LoggerService().error('Error: Response is empty');
       return;
@@ -205,7 +212,7 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
       entities: newEntitySentiments,
       keyPhrases: keyPhrases,
       imageId: '',
-      imagePath: '',
+      imagePath: imagePath,
       createdAt: DateTime.now().toUtc(),
     );
 
@@ -215,6 +222,7 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
   void toggleTextAnalysis([bool? isVisible]) {
     state = state.copyWith(
       isTextAnalysisVisible: isVisible ?? !state.isTextAnalysisVisible,
+      analysisResult: state.analysisResult,
     );
   }
 
@@ -231,7 +239,10 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
   }
 
   Future<void> emptyStoredAnalysisResults() async {
-    state = state.copyWith(storedAnalysisResults: []);
+    state = state.copyWith(
+      storedAnalysisResults: [],
+      analysisResult: state.analysisResult,
+    );
   }
 
   Future<void> fetchAnalysisResults(String user) async {
@@ -257,14 +268,17 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
         });
       }
 
-      state = state.copyWith(storedAnalysisResults: parsedResults);
+      state = state.copyWith(
+        storedAnalysisResults: parsedResults,
+        analysisResult: state.analysisResult,
+      );
     } catch (e) {
       rethrow;
     }
   }
 
   // Function to upload an image
-  Future<void> uploadImage() async {
+  Future<void> uploadImage({required String userId}) async {
     try {
       if (state.analysisResult == null ||
           state.analysisResult!.imagePath.isEmpty) {
@@ -276,8 +290,10 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
       final imageId = Uuid().v4();
 
       await StorageService().uploadFile(
-        imagePath: newImagePath,
+        //imagePath: newImagePath,
+        imagePath: state.analysisResult!.imagePath,
         imageId: imageId,
+        userId: userId,
       );
 
       var newAnalysisResult = AnalysisResult(

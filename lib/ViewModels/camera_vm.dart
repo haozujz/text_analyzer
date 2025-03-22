@@ -70,13 +70,8 @@ class CameraViewModel extends StateNotifier<CameraState> {
     }
   }
 
-  // Reset the image path to null when back key is pressed to navigate away from photo preview
   void resetImage() {
-    // LoggerService().info(
-    //   'Resetting image. Current image path: ${state.imagePath}',
-    // );
     state = state.copyWith(imagePath: '');
-    // LoggerService().info('Image path reset to: ${state.imagePath}');
   }
 
   CameraController? getCameraController() {

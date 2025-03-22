@@ -24,6 +24,8 @@ class BaseView extends ConsumerStatefulWidget {
 
 class BaseViewState extends ConsumerState<BaseView>
     with WidgetsBindingObserver {
+  bool _isRequestingPermission = false;
+
   @override
   void initState() {
     super.initState();
@@ -51,7 +53,12 @@ class BaseViewState extends ConsumerState<BaseView>
     final cameraViewModel = ref.read(cameraViewModelProvider.notifier);
 
     Future<void> initializeCamera() async {
+      if (_isRequestingPermission) {
+        return;
+      }
+      _isRequestingPermission = true;
       final cameraPermission = await Permission.camera.request();
+      _isRequestingPermission = false;
 
       if (cameraPermission.isGranted) {
         ref.read(cameraViewModelProvider.notifier).initializeCamera();

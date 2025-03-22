@@ -9,12 +9,15 @@ class StorageService {
   Future<void> uploadFile({
     required String imagePath,
     required String imageId,
+    required String userId,
   }) async {
     try {
       final result =
           await Amplify.Storage.uploadFile(
             localFile: AWSFile.fromPath(imagePath),
-            path: StoragePath.fromString('image-submissions/$imageId.jpg'),
+            path: StoragePath.fromString(
+              'photo-submissions/$userId/$imageId.jpg',
+            ),
           ).result;
       LoggerService().info('S3 Uploaded file: ${result.uploadedItem.path}');
     } on StorageException catch (e) {

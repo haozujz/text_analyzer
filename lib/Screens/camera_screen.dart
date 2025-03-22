@@ -44,22 +44,32 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   Widget build(BuildContext context) {
     final cameraState = ref.watch(cameraViewModelProvider);
     final cameraViewModel = ref.read(cameraViewModelProvider.notifier);
-    //final authState = ref.read(authViewModelProvider);
     final textAnalysisState = ref.read(textAnalysisViewModelProvider);
     final textAnalysisViewModel = ref.read(
       textAnalysisViewModelProvider.notifier,
     );
+    final authState = ref.read(authViewModelProvider);
     final authViewModel = ref.read(authViewModelProvider.notifier);
 
     Future<void> onSaveTapped() async {
       try {
+        LoggerService().error('User: ${authState.user}');
+        LoggerService().error('User: ${authState.email}');
+        LoggerService().error('User: ${authState.isSignedIn}');
+
         if (textAnalysisState.analysisResult == null) {
           authViewModel.showMessageOnly("No analysis result to save.");
           return;
         }
 
+        if (authState.user == null) {
+          authViewModel.showMessageOnly("No user.");
+          LoggerService().error('Auth error: ${authState.user}');
+          return;
+        }
+
         if (textAnalysisState.analysisResult!.imageId == '') {
-          await textAnalysisViewModel.uploadImage();
+          await textAnalysisViewModel.uploadImage(userId: authState.user!);
         }
 
         // temp comment

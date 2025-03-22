@@ -208,11 +208,15 @@ class AuthViewModel extends StateNotifier<AuthState>
   }
 
   void clearError() {
-    state = state.copyWith(error: null);
+    state = state.copyWith(error: null, user: state.user, email: state.email);
   }
 
   void showMessageOnly(String message) {
-    state = state.copyWith(error: message);
+    state = state.copyWith(
+      error: message,
+      user: state.user,
+      email: state.email,
+    );
   }
 
   @override
