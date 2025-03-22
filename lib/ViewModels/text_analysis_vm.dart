@@ -9,7 +9,9 @@ import '../Services/ocr_service.dart';
 //import 'dart:convert';
 import 'package:uuid/uuid.dart';
 
+import '../Services/storage_service.dart';
 import '../Services/websocket.dart';
+import '../Utilities/jpg_converter.dart';
 
 // Provides an instance of WebSocketService
 final webSocketProvider = Provider((ref) => WebSocketService());
@@ -256,6 +258,42 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
       }
 
       state = state.copyWith(storedAnalysisResults: parsedResults);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Function to upload an image
+  Future<void> uploadImage() async {
+    try {
+      if (state.analysisResult == null ||
+          state.analysisResult!.imagePath.isEmpty) {
+        throw NetworkError.unknown;
+      }
+      String newImagePath = await ImageUtils.ensureJpegFormat(
+        state.analysisResult!.imagePath,
+      );
+      final imageId = Uuid().v4();
+
+      await StorageService().uploadFile(
+        imagePath: newImagePath,
+        imageId: imageId,
+      );
+
+      var newAnalysisResult = AnalysisResult(
+        user: state.analysisResult!.user,
+        id: state.analysisResult!.id,
+        text: state.analysisResult!.text,
+        language: state.analysisResult!.language,
+        sentiment: state.analysisResult!.sentiment,
+        entities: state.analysisResult!.entities,
+        keyPhrases: state.analysisResult!.keyPhrases,
+        imageId: imageId,
+        imagePath: state.analysisResult!.imagePath,
+        createdAt: state.analysisResult!.createdAt,
+      );
+
+      state = state.copyWith(analysisResult: newAnalysisResult);
     } catch (e) {
       rethrow;
     }

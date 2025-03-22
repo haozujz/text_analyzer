@@ -45,7 +45,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     final cameraState = ref.watch(cameraViewModelProvider);
     final cameraViewModel = ref.read(cameraViewModelProvider.notifier);
     //final authState = ref.read(authViewModelProvider);
-    //final textAnalysisState = ref.read(textAnalysisViewModelProvider);
+    final textAnalysisState = ref.read(textAnalysisViewModelProvider);
     final textAnalysisViewModel = ref.read(
       textAnalysisViewModelProvider.notifier,
     );
@@ -53,8 +53,18 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
 
     Future<void> onSaveTapped() async {
       try {
-        await textAnalysisViewModel.postAnalysisResult();
-        LoggerService().info("Saved new analysis result to the database");
+        if (textAnalysisState.analysisResult == null) {
+          authViewModel.showMessageOnly("No analysis result to save.");
+          return;
+        }
+
+        if (textAnalysisState.analysisResult!.imageId == '') {
+          await textAnalysisViewModel.uploadImage();
+        }
+
+        // temp comment
+        // await textAnalysisViewModel.postAnalysisResult();
+        // LoggerService().info("Saved new analysis result to the database");
       } catch (e) {
         authViewModel.showMessageOnly("Network Error, please try again.");
 

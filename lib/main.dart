@@ -1,4 +1,5 @@
 //import 'package:amplify_api/amplify_api.dart';
+import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
 import '../Services/logger_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,12 +22,20 @@ Future<void> main() async {
 
 Future<void> _configureAmplify() async {
   try {
+    // await Amplify.addPlugin(AmplifyAuthCognito());
+    //await Amplify.addPlugin(AmplifyAPI()); // For appsync?
+
+    // final auth = AmplifyAuthCognito();
+    // final storage = AmplifyStorageS3();
+    // await Amplify.addPlugins([auth, storage]);
+
     await Amplify.addPlugin(AmplifyAuthCognito());
     //await Amplify.addPlugin(AmplifyAPI()); // For appsync?
+    await Amplify.addPlugin(AmplifyStorageS3());
     await Amplify.configure(amplifyConfig);
     LoggerService().info('Successfully configured');
   } on Exception catch (e) {
-    LoggerService().info('Error configuring Amplify: $e');
+    LoggerService().error('Error configuring Amplify: $e');
   }
 }
 
