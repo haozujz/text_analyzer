@@ -47,24 +47,28 @@ class BaseViewState extends ConsumerState<BaseView>
       textAnalysisViewModelProvider.notifier,
     );
     final authState = ref.watch(authViewModelProvider);
+    final authViewModel = ref.read(authViewModelProvider.notifier);
     final cameraViewModel = ref.read(cameraViewModelProvider.notifier);
 
     Future<void> initializeCamera() async {
       final cameraPermission = await Permission.camera.request();
 
       if (cameraPermission.isGranted) {
-        // Proceed with initializing the camera
         ref.read(cameraViewModelProvider.notifier).initializeCamera();
       } else if (cameraPermission.isDenied) {
-        // Permission denied but not permanently, ask again
         LoggerService().error(
           "Camera permission denied. Please grant permission.",
         );
+        authViewModel.showMessageOnly(
+          'Camera permission denied. Please grant permission to allow this app to use the camera.',
+        );
       } else if (cameraPermission.isPermanentlyDenied) {
-        // Open app settings for the user to enable manually
         LoggerService().error(
           "Camera permission permanently denied. Opening app settings...",
         );
+        Future.delayed(const Duration(milliseconds: 5000), () {
+          openAppSettings();
+        });
       }
     }
 
