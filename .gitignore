@@ -49,3 +49,6 @@ node_modules
 .amplify
 amplify_outputs*
 amplifyconfiguration*
+
+# api key
+.env

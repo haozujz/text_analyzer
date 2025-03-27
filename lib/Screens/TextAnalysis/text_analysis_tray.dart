@@ -1,4 +1,5 @@
 // import 'package:flutter/material.dart';
+import '../../Models/analysis_result_model.dart';
 import 'text_info_item.dart';
 import 'sentiment_info_item.dart';
 import 'entity_info_item.dart';
@@ -10,13 +11,19 @@ import 'package:flutter/cupertino.dart';
 
 class TextAnalysisTray extends ConsumerWidget {
   final ScrollController scrollController;
+  final AnalysisResult? analysisResult;
 
-  const TextAnalysisTray({required this.scrollController, super.key});
+  const TextAnalysisTray({
+    required this.scrollController,
+    this.analysisResult,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final textAnalysisState = ref.watch(textAnalysisViewModelProvider);
     final cameraState = ref.watch(cameraViewModelProvider);
+    final result = analysisResult ?? textAnalysisState.analysisResult;
 
     return ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
@@ -32,7 +39,10 @@ class TextAnalysisTray extends ConsumerWidget {
                 duration: Duration(
                   milliseconds: 300,
                 ), // Adjust for smoother animation
-                opacity: cameraState.imagePath.isNotEmpty ? 1.0 : 0.0,
+                opacity:
+                    analysisResult != null
+                        ? 1.0
+                        : (cameraState.imagePath.isNotEmpty ? 1.0 : 0.0),
                 child: Container(
                   width: 36,
                   height: 5,
@@ -44,34 +54,24 @@ class TextAnalysisTray extends ConsumerWidget {
                 ),
               ),
 
-              TextInfoItem(text: textAnalysisState.text),
+              TextInfoItem(text: result?.text ?? '...'),
               SizedBox(height: 12),
-              if (textAnalysisState.analysisResult == null) ...[
-                Center(
+              if (result == null) ...[
+                const Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: CupertinoActivityIndicator(
-                      radius: 15, // Apple-style spinner size
-                    ),
+                    padding: EdgeInsets.all(20.0),
+                    child: CupertinoActivityIndicator(radius: 15),
                   ),
                 ),
               ] else ...[
-                SentimentInfoItem(
-                  sentimentAnalysis:
-                      textAnalysisState.analysisResult?.sentiment,
-                ),
-                SizedBox(height: 12),
-                EntityInfoItem(
-                  entities: textAnalysisState.analysisResult?.entities ?? [],
-                ),
-                SizedBox(height: 12),
-                KeyPhraseInfoItem(
-                  keyPhrases:
-                      textAnalysisState.analysisResult?.keyPhrases ?? [],
-                ),
+                SentimentInfoItem(sentimentAnalysis: result.sentiment),
+                const SizedBox(height: 12),
+                EntityInfoItem(entities: result.entities ?? []),
+                const SizedBox(height: 12),
+                KeyPhraseInfoItem(keyPhrases: result.keyPhrases ?? []),
               ],
 
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
             ],
           ),
         ),

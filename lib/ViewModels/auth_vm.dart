@@ -2,11 +2,13 @@ import 'dart:async';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nlp_flutter/Services/logger_service.dart';
 
 enum AuthError {
   userNotFound("User does not exist"), // Cognito user not found
   wrongPassword("Incorrect password"), // Wrong password
   userNotConfirmed("User is not confirmed"), // Unverified account
+  identityIdMissing("User's identitiy id is missing"), // Unverified account
   sessionExpired("Session expired. Please log in again."), // Expired session
   userDeleted("User has been deleted."), // User deleted from Cognito
   notAuthorized("Not authorized"), // Unauthorized action
@@ -43,20 +45,29 @@ class AuthState {
   final String? error;
   final String? user;
   final String? email;
+  final String? identityId;
 
-  AuthState({this.isSignedIn = false, this.error, this.user, this.email});
+  AuthState({
+    this.isSignedIn = false,
+    this.error,
+    this.user,
+    this.email,
+    this.identityId,
+  });
 
   AuthState copyWith({
     bool? isSignedIn,
     String? error,
     String? user,
     String? email,
+    String? identityId,
   }) {
     return AuthState(
       isSignedIn: isSignedIn ?? this.isSignedIn,
       error: error,
       user: user,
       email: email,
+      identityId: identityId,
     );
   }
 }
@@ -128,12 +139,16 @@ class AuthViewModel extends StateNotifier<AuthState>
     if (isSignedIn) {
       try {
         Map<String, String>? userDetails = await getUserEmailAndSub();
+        final session = await Amplify.Auth.fetchAuthSession();
+        LoggerService().info('AuthSession: ${session.toJson()}');
+        String identityId = session.toJson()['identityId'] as String? ?? '';
 
         state = state.copyWith(
           isSignedIn: isSignedIn,
           error: error,
           user: userDetails['sub'],
           email: userDetails['email'],
+          identityId: identityId,
         );
       } catch (e) {
         state = state.copyWith(

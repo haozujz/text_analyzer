@@ -52,15 +52,16 @@ dependencies:
   # To store images temporarily
   path_provider: ^2.1.2
 
+  # env
+  flutter_dotenv: ^5.0.2
+
   # AWS
   aws_dynamodb_api: ^2.0.0
-
   amplify_flutter: ^2.6.1
   amplify_auth_cognito: ^2.6.1
   amplify_authenticator: ^2.3.3
   amplify_storage_s3: ^2.6.1
   aws_common: ^0.7.6
-
   # amplify_api: ^2.6.1
   amplify_datastore: ^2.6.1
 
@@ -71,6 +72,12 @@ dependencies:
   screen_state: ^4.0.0
   
   permission_handler: ^11.0.1
+
+  cached_network_image: ^3.3.1
+
+
+
+
 
 dev_dependencies:
   flutter_test:
@@ -124,3 +131,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  assets:
+    - .env

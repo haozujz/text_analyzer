@@ -89,9 +89,7 @@ class BaseViewState extends ConsumerState<BaseView>
               !next.isTextAnalysisVisible) {
             cameraViewModel.stopCamera();
           } else {
-            Future.microtask(() {
-              initializeCamera();
-            });
+            initializeCamera();
           }
         });
 
@@ -135,25 +133,14 @@ class BaseViewState extends ConsumerState<BaseView>
         return authState.isSignedIn
             ? Stack(
               children: [
-                Stack(
-                  children: [
-                    TabView(),
-                    AnimatedOpacity(
-                      opacity:
-                          textAnalysisState.isTextAnalysisVisible
-                              ? 1.0
-                              : 0.0, // Control visibility
-                      duration: const Duration(
-                        milliseconds: 200,
-                      ), // Smooth transition
-                      child: IgnorePointer(
-                        ignoring:
-                            !textAnalysisState
-                                .isTextAnalysisVisible, // Control interactability
-                        child: TextAnalysisScreen(),
-                      ),
-                    ),
-                  ],
+                TabView(),
+                AnimatedOpacity(
+                  opacity: textAnalysisState.isTextAnalysisVisible ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 200),
+                  child: IgnorePointer(
+                    ignoring: !textAnalysisState.isTextAnalysisVisible,
+                    child: TextAnalysisScreen(),
+                  ),
                 ),
               ],
             )

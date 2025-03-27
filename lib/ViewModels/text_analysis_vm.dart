@@ -98,8 +98,8 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
     });
   }
 
-  void onPhotoChange(String imagePath, String user) async {
-    state = state.copyWith(text: '...', analysisResult: state.analysisResult);
+  Future<void> onPhotoChange(String imagePath, String user) async {
+    state = state.copyWith(text: '...');
 
     if (imagePath.isEmpty) {
       return;
@@ -122,11 +122,15 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
       text = '...';
     }
 
-    state = state.copyWith(text: text, analysisResult: state.analysisResult);
+    state = state.copyWith(text: text);
 
     if (state.text.isNotEmpty && state.text != '...') {
-      var resp = await getTextAnalysisJSON();
-      interpretTextAnalysisJSON(resp, user, imagePath);
+      try {
+        var resp = await getTextAnalysisJSON();
+        interpretTextAnalysisJSON(resp, user, imagePath);
+      } catch (e) {
+        rethrow;
+      }
     }
   }
 
@@ -238,6 +242,23 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
     }
   }
 
+  Future<void> deleteAnalysisResult({
+    required String user,
+    required String id,
+  }) async {
+    try {
+      await NetworkService().deleteAnalysisResult(user: user, id: id);
+      // List<AnalysisResult> parsedResults = [];
+
+      // state = state.copyWith(
+      //   storedAnalysisResults: parsedResults,
+      //   analysisResult: state.analysisResult,
+      // );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<void> emptyStoredAnalysisResults() async {
     state = state.copyWith(
       storedAnalysisResults: [],
@@ -278,7 +299,7 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
   }
 
   // Function to upload an image
-  Future<void> uploadImage({required String userId}) async {
+  Future<void> uploadImage({required String identityId}) async {
     try {
       if (state.analysisResult == null ||
           state.analysisResult!.imagePath.isEmpty) {
@@ -290,10 +311,10 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
       final imageId = Uuid().v4();
 
       await StorageService().uploadFile(
-        //imagePath: newImagePath,
-        imagePath: state.analysisResult!.imagePath,
+        imagePath: newImagePath,
+        //imagePath: state.analysisResult!.imagePath,
         imageId: imageId,
-        userId: userId,
+        identityId: identityId,
       );
 
       var newAnalysisResult = AnalysisResult(

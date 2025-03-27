@@ -17,7 +17,11 @@ class PhotoPreview extends StatelessWidget {
         alignment: Alignment.topCenter,
         child:
             (imagePath.isNotEmpty && imagePath != '')
-                ? Image.file(File(imagePath), width: double.infinity)
+                ? Image.file(
+                  File(imagePath),
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                )
                 : const Text(
                   "No image available",
                   style: TextStyle(color: AppColors.text),

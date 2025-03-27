@@ -2,7 +2,8 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nlp_flutter/Screens/listResultsScreen.dart';
+import 'package:nlp_flutter/Screens/ListResults/list_results_screen.dart';
+import 'package:nlp_flutter/Screens/Profile/profile_screen.dart';
 import 'Services/websocket.dart';
 import 'Utilities/constants.dart';
 import 'ViewModels/text_analysis_vm.dart';
@@ -32,9 +33,9 @@ class TabViewState extends ConsumerState<TabView> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.background,
-        elevation: 100,
+        //elevation: 100,
         leading:
-            _selectedIndex == 0
+            _selectedIndex == 0 || _selectedIndex == 1
                 ? IconButton(
                   icon: Icon(CupertinoIcons.camera, color: AppColors.text),
                   onPressed: () {
@@ -43,7 +44,7 @@ class TabViewState extends ConsumerState<TabView> {
                 )
                 : SizedBox.shrink(),
         actions: [
-          _selectedIndex == 0
+          _selectedIndex == 0 || _selectedIndex == 1
               ? IconButton(
                 icon: Icon(
                   CupertinoIcons.ellipsis_vertical,
@@ -56,25 +57,23 @@ class TabViewState extends ConsumerState<TabView> {
               : SizedBox.shrink(),
         ],
       ),
-      body:
-          _selectedIndex == 0
-              ? ListResultsScreen()
-              : Stack(
-                children: [
-                  // Other widgets that should be in the Stack go here
-                  ElevatedButton(
-                    onPressed: WebSocketService().connect,
-                    child: const Text("Toggle"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      await Amplify.Auth.signOut();
-                    },
-                    child: const Text("Sign Out"),
-                  ),
-                ],
-              ),
+      body: _selectedIndex == 0 ? ListResultsScreen() : ProfileScreen(),
 
+      // Column(
+      //   children: [
+      //     // Other widgets that should be in the Stack go here
+      //     ElevatedButton(
+      //       onPressed: WebSocketService().connect,
+      //       child: const Text("Toggle"),
+      //     ),
+      //     ElevatedButton(
+      //       onPressed: () async {
+      //         await Amplify.Auth.signOut();
+      //       },
+      //       child: const Text("Sign Out"),
+      //     ),
+      //   ],
+      // ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onTabChanged,

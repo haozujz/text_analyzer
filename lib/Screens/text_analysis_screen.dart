@@ -1,6 +1,7 @@
 // import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nlp_flutter/Services/network_service.dart';
 import 'package:nlp_flutter/ViewModels/auth_vm.dart';
 import '../Utilities/constants.dart';
 import 'package:image_picker/image_picker.dart';
@@ -75,6 +76,7 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
     final cameraState = ref.watch(cameraViewModelProvider);
     final cameraViewModel = ref.read(cameraViewModelProvider.notifier);
     final authState = ref.read(authViewModelProvider);
+    final authViewModel = ref.read(authViewModelProvider.notifier);
 
     final textAnalysisViewModel = ref.read(
       textAnalysisViewModelProvider.notifier,
@@ -105,10 +107,18 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
         );
 
         if (authState.user != null) {
-          textAnalysisViewModel.onPhotoChange(
-            next.imagePath,
-            authState.user ?? '',
-          );
+          try {
+            await textAnalysisViewModel.onPhotoChange(
+              next.imagePath,
+              authState.user!,
+            );
+          } catch (e) {
+            if (e is NetworkError) {
+              authViewModel.showMessageOnly(e.message);
+            } else {
+              authViewModel.showMessageOnly('$e');
+            }
+          }
         }
       }
     });
@@ -217,7 +227,7 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
                     size: 28,
                   ),
                   padding: EdgeInsets.all(12),
-                  splashRadius: 24, // Sets the splash radius for the tap effect
+                  splashRadius: 24, // Splash radius for the tap effect
                 ),
               ),
             ),
@@ -246,42 +256,3 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
     );
   }
 }
-
-
-
-              
-
-          // Positioned(
-          //   bottom: 200,
-          //   left: 48,
-          //   child: Stack(
-          //     alignment: Alignment.center,
-          //     children: [
-          //       _image != null
-          //           ? Image.file(
-          //             _image!,
-          //             width: 200,
-          //             height: 200,
-          //             fit: BoxFit.cover,
-          //           )
-          //           : _lastImage != null
-          //           ? FutureBuilder<Widget>(
-          //             future: getThumbnail(_lastImage!),
-          //             builder: (context, snapshot) {
-          //               if (snapshot.connectionState == ConnectionState.done) {
-          //                 if (snapshot.hasData) {
-          //                   return snapshot.data!;
-          //                 }
-          //               }
-          //               return CircularProgressIndicator();
-          //             },
-          //           )
-          //           : Text('No image selected'),
-          //       SizedBox(height: 20),
-          //       ElevatedButton(
-          //         onPressed: pickImage,
-          //         child: Text('Pick Image from Gallery'),
-          //       ),
-          //     ],
-          //   ),
-          // ),

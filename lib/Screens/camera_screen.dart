@@ -51,30 +51,39 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     final authState = ref.read(authViewModelProvider);
     final authViewModel = ref.read(authViewModelProvider.notifier);
 
+    final bool isSaveEnabled =
+        textAnalysisState.analysisResult != null &&
+        cameraState.imagePath.isNotEmpty &&
+        authState.user != null &&
+        authState.user != '' &&
+        authState.identityId != null &&
+        authState.identityId != '';
+
     Future<void> onSaveTapped() async {
       try {
-        LoggerService().error('User: ${authState.user}');
-        LoggerService().error('User: ${authState.email}');
-        LoggerService().error('User: ${authState.isSignedIn}');
-
         if (textAnalysisState.analysisResult == null) {
           authViewModel.showMessageOnly("No analysis result to save.");
           return;
         }
 
-        if (authState.user == null) {
-          authViewModel.showMessageOnly("No user.");
-          LoggerService().error('Auth error: ${authState.user}');
+        if (authState.user == null || authState.user == '') {
+          authViewModel.showMessageOnly(AuthError.userNotFound.message);
+          return;
+        }
+
+        if (authState.identityId == null || authState.identityId == '') {
+          authViewModel.showMessageOnly(AuthError.identityIdMissing.message);
           return;
         }
 
         if (textAnalysisState.analysisResult!.imageId == '') {
-          await textAnalysisViewModel.uploadImage(userId: authState.user!);
+          await textAnalysisViewModel.uploadImage(
+            identityId: authState.identityId!,
+          );
         }
 
-        // temp comment
-        // await textAnalysisViewModel.postAnalysisResult();
-        // LoggerService().info("Saved new analysis result to the database");
+        await textAnalysisViewModel.postAnalysisResult();
+        LoggerService().info("Saved new analysis result to the database");
       } catch (e) {
         authViewModel.showMessageOnly("Network Error, please try again.");
 
@@ -219,6 +228,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                                       context,
                                       offset,
                                       onSaveTapped,
+                                      isSaveEnabled, // Pass the condition here
                                     );
                                   },
                                 ),
@@ -234,52 +244,36 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   }
 }
 
-void _showPopupMenu(BuildContext context, Offset position, VoidCallback onTap) {
+void _showPopupMenu(
+  BuildContext context,
+  Offset position,
+  VoidCallback onTap,
+  bool isEnabled,
+) {
   final RenderBox overlay =
       Overlay.of(context).context.findRenderObject() as RenderBox;
 
   showMenu(
     context: context,
     position: RelativeRect.fromRect(
-      Rect.fromLTWH(position.dx, position.dy, 0, 0), // Correctly position it
-      Offset.zero &
-          overlay.size, // Ensure menu appears within the screen bounds
+      Rect.fromLTWH(position.dx, position.dy, 0, 0),
+      Offset.zero & overlay.size,
     ),
     items: [
       PopupMenuItem(
-        onTap: onTap,
+        onTap: isEnabled ? onTap : null, // Disable onTap based on the condition
         child: Text(
-          "Save",
-          style: TextStyle(color: Colors.white),
-        ), // Use the passed function
+          isEnabled ? "Save" : "Please Wait",
+          style: TextStyle(
+            color:
+                isEnabled
+                    ? Colors.white
+                    : Colors.grey, // Grey out text if not enabled
+          ),
+        ),
       ),
     ],
-    color: Colors.grey[900], // Dark background
+    color: Colors.grey[900],
     elevation: 4,
   );
 }
-
-// void _showPopupMenu(BuildContext context, Offset position) {
-//   final RenderBox overlay =
-//       Overlay.of(context).context.findRenderObject() as RenderBox;
-
-//   showMenu(
-//     context: context,
-//     position: RelativeRect.fromRect(
-//       Rect.fromLTWH(position.dx, position.dy, 0, 0), // Correctly position it
-//       Offset.zero &
-//           overlay.size, // Ensure menu appears within the screen bounds
-//     ),
-//     items: [
-//       PopupMenuItem(
-//         child: Text(
-//           "Save",
-//           style: TextStyle(color: Colors.white),
-//         ), // White text for dark mode
-//         onTap: () => LoggerService().info("Save clicked"),
-//       ),
-//     ],
-//     color: Colors.grey[900], // Dark background
-//     elevation: 4,
-//   );
-// }
