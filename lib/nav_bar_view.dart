@@ -59,27 +59,12 @@ class TabViewState extends ConsumerState<TabView> {
       ),
       body: _selectedIndex == 0 ? ListResultsScreen() : ProfileScreen(),
 
-      // Column(
-      //   children: [
-      //     // Other widgets that should be in the Stack go here
-      //     ElevatedButton(
-      //       onPressed: WebSocketService().connect,
-      //       child: const Text("Toggle"),
-      //     ),
-      //     ElevatedButton(
-      //       onPressed: () async {
-      //         await Amplify.Auth.signOut();
-      //       },
-      //       child: const Text("Sign Out"),
-      //     ),
-      //   ],
-      // ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onTabChanged,
-        type: BottomNavigationBarType.fixed, // Mimic iOS look with fixed icons
-        selectedItemColor: AppColors.button, // Apple-like color
-        unselectedItemColor: CupertinoColors.systemGrey, // Apple-like color
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: AppColors.button,
+        unselectedItemColor: CupertinoColors.systemGrey,
         backgroundColor: AppColors.background,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
