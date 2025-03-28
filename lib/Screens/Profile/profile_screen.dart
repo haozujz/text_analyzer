@@ -17,41 +17,45 @@ class ProfileScreen extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           children: [
-            const SizedBox(height: 24),
+            const SizedBox(height: 92),
+
             Stack(
-              alignment: Alignment.bottomRight,
+              alignment: Alignment.center,
               children: [
-                CircleAvatar(
-                  radius: 50,
+                const CircleAvatar(
+                  radius: 78,
                   backgroundColor: AppColors.surface,
                   backgroundImage: NetworkImage(
-                    'https://via.placeholder.com/150',
+                    'https://pics.craiyon.com/2024-09-08/4rXFZUQWTO2XzUVI0Zr50w.webp',
                   ),
                 ),
 
                 Positioned(
-                  bottom: 0,
-                  right: 4,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: AppColors.button,
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(
+                  bottom: 6, // Adjust to move it slightly up/down
+                  right: 6, // Adjust to move it closer to the avatar's edge
+                  child: GestureDetector(
+                    onTap: () {
+                      // TODO: Edit profile picture
+                    },
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: AppColors.button,
+                        shape: BoxShape.circle,
+                      ),
+                      padding: const EdgeInsets.all(4),
+                      child: const Icon(
                         Icons.edit,
                         color: Colors.white,
-                        size: 12,
+                        size: 18,
                       ),
-                      onPressed: () {
-                        // TODO: Edit profile picture
-                      },
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 40),
+
+            const SizedBox(height: 92),
+
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -64,7 +68,9 @@ class ProfileScreen extends ConsumerWidget {
                 style: const TextStyle(color: AppColors.text, fontSize: 16),
               ),
             ),
-            const SizedBox(height: 30),
+
+            const SizedBox(height: 50),
+
             ElevatedButton(
               onPressed: () {
                 // TODO: Reset password
@@ -86,7 +92,9 @@ class ProfileScreen extends ConsumerWidget {
                 style: TextStyle(fontSize: 16),
               ),
             ),
-            const SizedBox(height: 16),
+
+            const SizedBox(height: 50),
+
             ElevatedButton(
               onPressed: () async {
                 await Amplify.Auth.signOut();

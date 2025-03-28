@@ -43,7 +43,7 @@ class CameraService {
   //   }
   // }
 
-  void dispose() {
-    _controller?.dispose();
-  }
+  // void dispose() {
+  //   _controller?.dispose();
+  // }
 }

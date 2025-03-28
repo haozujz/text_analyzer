@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nlp_flutter/Models/analysis_result_model.dart';
+import '../../Services/logger_service.dart';
+import '../../Services/network_service.dart';
 import '../../Utilities/constants.dart';
 import '../../ViewModels/auth_vm.dart';
 import '../../ViewModels/text_analysis_vm.dart';
@@ -22,13 +24,32 @@ class _AnalysisResultImageScreenState
   Widget build(BuildContext context) {
     final textAnalysisVM = ref.read(textAnalysisViewModelProvider.notifier);
     final authState = ref.read(authViewModelProvider);
+    final authVM = ref.read(authViewModelProvider.notifier);
 
-    void onDeleteTapped(String id) {
+    void onDeleteTapped(String id) async {
       if (authState.user == null) {
         return;
       }
       ;
-      textAnalysisVM.deleteAnalysisResult(user: authState.user!, id: id);
+      try {
+        await textAnalysisVM.deleteAnalysisResult(
+          user: authState.user!,
+          id: id,
+        );
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+      } catch (e) {
+        authVM.showMessageOnly("Network Error, please try again.");
+
+        if (e is NetworkError) {
+          LoggerService().error(
+            "Network error calling AWS Lambda: ${e.message}",
+          );
+        } else {
+          LoggerService().error("Network Error calling AWS Lambda: $e");
+        }
+      }
     }
 
     return Scaffold(

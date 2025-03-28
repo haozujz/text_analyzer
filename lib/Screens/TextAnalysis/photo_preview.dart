@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../Utilities/constants.dart';
+import '../../Utilities/constants.dart';
 
 class PhotoPreview extends StatelessWidget {
   final String imagePath;

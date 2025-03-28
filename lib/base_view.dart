@@ -7,7 +7,7 @@ import 'package:nlp_flutter/Services/logger_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../ViewModels/auth_vm.dart';
 import '../ViewModels/camera_vm.dart';
-import 'Screens/text_analysis_screen.dart';
+import 'Screens/TextAnalysis/text_analysis_screen.dart';
 import 'Screens/Authentication/login_screen.dart';
 import '../Views/custom_alert_dialog.dart';
 import 'Services/websocket.dart';
@@ -45,12 +45,10 @@ class BaseViewState extends ConsumerState<BaseView>
   @override
   Widget build(BuildContext context) {
     final textAnalysisState = ref.watch(textAnalysisViewModelProvider);
-    final textAnalysisViewModel = ref.read(
-      textAnalysisViewModelProvider.notifier,
-    );
+    final textAnalysisVM = ref.read(textAnalysisViewModelProvider.notifier);
     final authState = ref.watch(authViewModelProvider);
-    final authViewModel = ref.read(authViewModelProvider.notifier);
-    final cameraViewModel = ref.read(cameraViewModelProvider.notifier);
+    final authVM = ref.read(authViewModelProvider.notifier);
+    final cameraVM = ref.read(cameraViewModelProvider.notifier);
 
     Future<void> initializeCamera() async {
       if (_isRequestingPermission) {
@@ -66,7 +64,7 @@ class BaseViewState extends ConsumerState<BaseView>
         LoggerService().error(
           "Camera permission denied. Please grant permission.",
         );
-        authViewModel.showMessageOnly(
+        authVM.showMessageOnly(
           'Camera permission denied. Please grant permission to allow this app to use the camera.',
         );
       } else if (cameraPermission.isPermanentlyDenied) {
@@ -87,7 +85,7 @@ class BaseViewState extends ConsumerState<BaseView>
         ) async {
           if (previous?.isTextAnalysisVisible != next.isTextAnalysisVisible &&
               !next.isTextAnalysisVisible) {
-            cameraViewModel.stopCamera();
+            cameraVM.stopCamera();
           } else {
             initializeCamera();
           }
@@ -95,11 +93,8 @@ class BaseViewState extends ConsumerState<BaseView>
 
         ref.listen<AuthState>(authViewModelProvider, (previous, next) async {
           if (previous?.isSignedIn != next.isSignedIn && !next.isSignedIn) {
-            cameraViewModel.stopCamera();
+            cameraVM.stopCamera();
           }
-          // else {
-          //   textAnalysisViewModel.toggleTextAnalysis(true);
-          // }
 
           if (next.error != null) {
             showCustomAlertDialog(
@@ -117,9 +112,9 @@ class BaseViewState extends ConsumerState<BaseView>
           }
 
           if (previous?.user != next.user && next.user != null) {
-            textAnalysisViewModel.emptyStoredAnalysisResults();
+            textAnalysisVM.emptyStoredAnalysisResults();
             try {
-              await textAnalysisViewModel.fetchAnalysisResults(next.user!);
+              await textAnalysisVM.fetchAnalysisResults(next.user!);
             } catch (e) {
               LoggerService().info('Error fetching analysis results: $e');
             }

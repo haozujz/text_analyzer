@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nlp_flutter/ViewModels/text_analysis_vm.dart';
-import '../Services/network_service.dart';
-import '../Utilities/constants.dart';
-import '../ViewModels/auth_vm.dart';
-import '../ViewModels/camera_vm.dart';
-import '../Services/logger_service.dart';
+import '../../Services/network_service.dart';
+import '../../Utilities/constants.dart';
+import '../../ViewModels/auth_vm.dart';
+import '../../ViewModels/camera_vm.dart';
+import '../../Services/logger_service.dart';
 import 'photo_preview.dart';
 
 class CameraScreen extends ConsumerStatefulWidget {
@@ -43,13 +43,11 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   @override
   Widget build(BuildContext context) {
     final cameraState = ref.watch(cameraViewModelProvider);
-    final cameraViewModel = ref.read(cameraViewModelProvider.notifier);
+    final cameraVM = ref.read(cameraViewModelProvider.notifier);
     final textAnalysisState = ref.read(textAnalysisViewModelProvider);
-    final textAnalysisViewModel = ref.read(
-      textAnalysisViewModelProvider.notifier,
-    );
+    final textAnalysisVM = ref.read(textAnalysisViewModelProvider.notifier);
     final authState = ref.read(authViewModelProvider);
-    final authViewModel = ref.read(authViewModelProvider.notifier);
+    final authVM = ref.read(authViewModelProvider.notifier);
 
     final bool isSaveEnabled =
         textAnalysisState.analysisResult != null &&
@@ -62,30 +60,28 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     Future<void> onSaveTapped() async {
       try {
         if (textAnalysisState.analysisResult == null) {
-          authViewModel.showMessageOnly("No analysis result to save.");
+          authVM.showMessageOnly("No analysis result to save.");
           return;
         }
 
         if (authState.user == null || authState.user == '') {
-          authViewModel.showMessageOnly(AuthError.userNotFound.message);
+          authVM.showMessageOnly(AuthError.userNotFound.message);
           return;
         }
 
         if (authState.identityId == null || authState.identityId == '') {
-          authViewModel.showMessageOnly(AuthError.identityIdMissing.message);
+          authVM.showMessageOnly(AuthError.identityIdMissing.message);
           return;
         }
 
         if (textAnalysisState.analysisResult!.imageId == '') {
-          await textAnalysisViewModel.uploadImage(
-            identityId: authState.identityId!,
-          );
+          await textAnalysisVM.uploadImage(identityId: authState.identityId!);
         }
 
-        await textAnalysisViewModel.postAnalysisResult();
+        await textAnalysisVM.postAnalysisResult();
         LoggerService().info("Saved new analysis result to the database");
       } catch (e) {
-        authViewModel.showMessageOnly("Network Error, please try again.");
+        authVM.showMessageOnly("Network Error, please try again.");
 
         if (e is NetworkError) {
           LoggerService().error(
@@ -101,7 +97,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
       canPop: cameraState.imagePath.isEmpty,
       onPopInvokedWithResult: (didPop, result) {
         if (cameraState.imagePath.isNotEmpty) {
-          cameraViewModel.resetImage();
+          cameraVM.resetImage();
         }
       },
       child: ClipRRect(
@@ -147,7 +143,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                                         'CameraPreview',
                                       ), // Ensures proper switching
                                       child: CameraPreview(
-                                        cameraViewModel.getCameraController()!,
+                                        cameraVM.getCameraController()!,
                                       ),
                                     )
                                     : PhotoPreview(
@@ -185,7 +181,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                                     10,
                                   ), // Ensures a large tap target
                                   onPressed: () {
-                                    cameraViewModel.resetImage();
+                                    cameraVM.resetImage();
                                   },
                                 ),
                               ),

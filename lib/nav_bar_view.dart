@@ -26,25 +26,23 @@ class TabViewState extends ConsumerState<TabView> {
 
   @override
   Widget build(BuildContext context) {
-    final textAnalysisViewModel = ref.read(
-      textAnalysisViewModelProvider.notifier,
-    );
+    final textAnalysisVM = ref.read(textAnalysisViewModelProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.background,
         //elevation: 100,
         leading:
-            _selectedIndex == 0 || _selectedIndex == 1
+            _selectedIndex == 0
                 ? IconButton(
                   icon: Icon(CupertinoIcons.camera, color: AppColors.text),
                   onPressed: () {
-                    textAnalysisViewModel.toggleTextAnalysis();
+                    textAnalysisVM.toggleTextAnalysis();
                   },
                 )
                 : SizedBox.shrink(),
         actions: [
-          _selectedIndex == 0 || _selectedIndex == 1
+          _selectedIndex == 0
               ? IconButton(
                 icon: Icon(
                   CupertinoIcons.ellipsis_vertical,

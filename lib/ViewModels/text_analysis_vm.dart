@@ -233,31 +233,50 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
   Future<void> postAnalysisResult() async {
     try {
       if (state.analysisResult != null) {
-        await NetworkService().postAnalysisResult(state.analysisResult!);
+        await AnalysisResultRepository().postAnalysisResult(
+          analysisResult: state.analysisResult!,
+        );
       } else {
-        throw NetworkError.unknown;
+        throw NetworkError.badRequest;
       }
     } catch (e) {
       rethrow;
     }
   }
 
+  // Future<void> postAnalysisResult() async {
+  //   try {
+  //     if (state.analysisResult != null) {
+  //       await NetworkService().postAnalysisResult(state.analysisResult!);
+  //     } else {
+  //       throw NetworkError.unknown;
+  //     }
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
+
   Future<void> deleteAnalysisResult({
     required String user,
     required String id,
   }) async {
     try {
-      await NetworkService().deleteAnalysisResult(user: user, id: id);
-      // List<AnalysisResult> parsedResults = [];
-
-      // state = state.copyWith(
-      //   storedAnalysisResults: parsedResults,
-      //   analysisResult: state.analysisResult,
-      // );
+      await AnalysisResultRepository().deleteAnalysisResult(user: user, id: id);
     } catch (e) {
       rethrow;
     }
   }
+
+  // Future<void> deleteAnalysisResult({
+  //   required String user,
+  //   required String id,
+  // }) async {
+  //   try {
+  //     await NetworkService().deleteAnalysisResult(user: user, id: id);
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
 
   Future<void> emptyStoredAnalysisResults() async {
     state = state.copyWith(
@@ -268,26 +287,9 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
 
   Future<void> fetchAnalysisResults(String user) async {
     try {
-      var results = await NetworkService().fetchAnalysisResults(user);
-      List<AnalysisResult> parsedResults = [];
-
-      if (results.containsKey('results')) {
-        var items = results['results'];
-        LoggerService().info('Results Data: $items'); // Log the results data
-
-        LoggerService().info('Results Data Count: ${items.length}');
-
-        items.forEach((el) {
-          try {
-            parsedResults.add(
-              AnalysisResultRepository().parseAnalysisResult(el),
-            );
-          } catch (e) {
-            LoggerService().info('Error parsing element: $el');
-            LoggerService().info('Parsing error: $e');
-          }
-        });
-      }
+      var parsedResults = await AnalysisResultRepository().fetchAnalysisResults(
+        user,
+      );
 
       state = state.copyWith(
         storedAnalysisResults: parsedResults,
@@ -298,7 +300,6 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
     }
   }
 
-  // Function to upload an image
   Future<void> uploadImage({required String identityId}) async {
     try {
       if (state.analysisResult == null ||
@@ -312,7 +313,6 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
 
       await StorageService().uploadFile(
         imagePath: newImagePath,
-        //imagePath: state.analysisResult!.imagePath,
         imageId: imageId,
         identityId: identityId,
       );
@@ -336,82 +336,3 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
     }
   }
 }
-
-
-// {
-//     "body": "{\"user\": \"123user\", \"id\": \"123id\", \"text\": \"This is a test text\", \"language\": \"en\", \"sentiment\": {\"Sentiment\": \"POSITIVE\", \"Positive\": 0.9, \"Negative\": 0.05, \"Neutral\": 0.05, \"Mixed\": 0.0}, \"entities\": [{\"Text\": \"entity1\", \"Type\": \"PERSON\", \"Sentiment\": \"POSITIVE\"}], \"keyPhrases\": [\"keyphrase1\", \"keyphrase2\"], \"imageId\": \"img123\", \"imagePath\": \"/images/img123.jpg\"}"
-// }
-
-
-
-
-
-//   void interpretTextAnalysis(String resp) {
-
-//   //   final responseJson = '''{
-//   //   "statusCode": 200,
-//   //   "body": {
-//   //     "text": "I love this app! The name of this app is Text Sentiment Analyzer.",
-//   //     "language": "en",
-//   //     "sentiment": {
-//   //       "Sentiment": "POSITIVE",
-//   //       "SentimentScores": {
-//   //         "Positive": 99.98713731765747,
-//   //         "Negative": 0.0030144743504934013,
-//   //         "Neutral": 0.006908029172336683,
-//   //         "Mixed": 0.0029376653401413932
-//   //       }
-//   //     },
-//   //     "entity_sentiments": [
-//   //       {
-//   //         "Score": 0.598901093006134,
-//   //         "Type": "OTHER",
-//   //         "Text": "Sentiment Analyzer"
-//   //       }
-//   //     ],
-//   //     "key_phrases": [
-//   //       "this app",
-//   //       "The name",
-//   //       "this app",
-//   //       "Text Sentiment Analyzer"
-//   //     ]
-//   //   },
-//   //   "headers": {
-//   //     "Content-Type": "application/json"
-//   //   }
-//   // }''';
-
-//     final response = json.decode(resp);
-
-//     // Accessing the body
-//     final body = response['body'];
-
-//     // Access text and language
-//     String text = body['text'];
-//     String language = body['language'];
-
-//     // Access sentiment data
-//     String sentiment = body['sentiment']['Sentiment'];
-//     Map<String, double> sentimentScores = {
-//       'Positive': body['sentiment']['SentimentScores']['Positive'],
-//       'Negative': body['sentiment']['SentimentScores']['Negative'],
-//       'Neutral': body['sentiment']['SentimentScores']['Neutral'],
-//       'Mixed': body['sentiment']['SentimentScores']['Mixed'],
-//     };
-
-//     // Access entity_sentiments
-//     List<Map<String, dynamic>> entitySentiments =
-//         List<Map<String, dynamic>>.from(body['entity_sentiments']);
-
-//     // Access key_phrases
-//     List<String> keyPhrases = List<String>.from(body['key_phrases']);
-
-//     // Output values
-//     print('Text: $text');
-//     print('Language: $language');
-//     print('Sentiment: $sentiment');
-//     print('Sentiment Scores: $sentimentScores');
-//     print('Entity Sentiments: $entitySentiments');
-//     print('Key Phrases: $keyPhrases');
-//   }
-// }

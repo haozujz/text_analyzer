@@ -1,35 +1,53 @@
-// import 'package:aws_dynamodb_api/dynamodb-2012-08-10.dart';
-// import 'package:uuid/uuid.dart';
-// import '../Models/analysis_result_model.dart';
-
-import 'package:nlp_flutter/Services/logger_service.dart';
-
 import '../Models/analysis_result_model.dart';
+import '../Services/network_service.dart';
 
 class AnalysisResultRepository {
+  Future<void> postAnalysisResult({
+    required AnalysisResult analysisResult,
+  }) async {
+    try {
+      await NetworkService().postAnalysisResult(analysisResult);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> deleteAnalysisResult({
+    required String user,
+    required String id,
+  }) async {
+    try {
+      await NetworkService().deleteAnalysisResult(user: user, id: id);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<AnalysisResult>> fetchAnalysisResults(String user) async {
+    try {
+      var results = await NetworkService().fetchAnalysisResults(user);
+      List<AnalysisResult> parsedResults = [];
+
+      if (results.containsKey('results')) {
+        var items = results['results'];
+
+        items.forEach((el) {
+          try {
+            parsedResults.add(parseAnalysisResult(el));
+          } catch (e) {
+            rethrow;
+          }
+        });
+      }
+
+      return parsedResults;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   AnalysisResult parseAnalysisResult(Map<String, dynamic> item) {
     try {
-      // Parse sentiment data
-      LoggerService().info('Parsing: ${item['sentiment']}');
-      LoggerService().info('Parsing: ${item['entities']}');
-
-      // final sentimentData =
-      //     item['sentiment'] ??
-      //     SentimentAnalysis(
-      //       sentiment: '',
-      //       positive: 0.0,
-      //       negative: 0.0,
-      //       neutral: 0.0,
-      //       mixed: 0.0,
-      //     ); // Default to empty map if missing
-      // final sentiment = SentimentAnalysis(
-      //   sentiment: sentimentData['sentiment'] ?? 'neutral',
-      //   positive: 0.0,
-      //   negative: 0.0,
-      //   neutral: 0.0,
-      //   mixed: 0.0,
-      // );
-
       final sentiment = SentimentAnalysis(
         sentiment: item['sentiment']['sentiment'] ?? 'neutral',
         positive:
@@ -76,16 +94,13 @@ class AnalysisResultRepository {
             } else {
               return ''; // Otherwise, return an empty string or handle it accordingly
             }
-          }).toList(); // This explicitly maps each element to a String
-
-      //TODO: Fix createdAt parsing
+          }).toList();
 
       final createdAt =
           item['createdAt'] != null
               ? DateTime.tryParse(item['createdAt']) ?? DateTime.now()
               : DateTime.now();
 
-      // Return the parsed AnalysisResult
       return AnalysisResult(
         user: item['user'] ?? 'someUser',
         id: item['id'] ?? 'someId',
@@ -99,7 +114,7 @@ class AnalysisResultRepository {
         createdAt: createdAt,
       );
     } catch (e) {
-      rethrow; // Optional: rethrow or handle based on your use case
+      rethrow;
     }
   }
 
@@ -118,17 +133,6 @@ class AnalysisResultRepository {
     );
   }
 
-  // From WebSocket
-  SentimentAnalysis parseSentiment(Map<String, dynamic> sentimentMap) {
-    return SentimentAnalysis(
-      sentiment: sentimentMap['sentiment']['S'].toLowerCase(),
-      positive: double.tryParse(sentimentMap['positive']['N']) ?? 0.0,
-      negative: double.tryParse(sentimentMap['negative']['N']) ?? 0.0,
-      neutral: double.tryParse(sentimentMap['neutral']['N']) ?? 0.0,
-      mixed: double.tryParse(sentimentMap['mixed']['N']) ?? 0.0,
-    );
-  }
-
   List<String> parseKeyPhrases(List<dynamic> keyPhrasesList) {
     return keyPhrasesList.map((item) => item['S'] as String).toList();
   }
@@ -143,13 +147,15 @@ class AnalysisResultRepository {
       );
     }).toList();
   }
+
+  // From WebSocket
+  SentimentAnalysis parseSentiment(Map<String, dynamic> sentimentMap) {
+    return SentimentAnalysis(
+      sentiment: sentimentMap['sentiment']['S'].toLowerCase(),
+      positive: double.tryParse(sentimentMap['positive']['N']) ?? 0.0,
+      negative: double.tryParse(sentimentMap['negative']['N']) ?? 0.0,
+      neutral: double.tryParse(sentimentMap['neutral']['N']) ?? 0.0,
+      mixed: double.tryParse(sentimentMap['mixed']['N']) ?? 0.0,
+    );
+  }
 }
-
-
-  // Fetch text analysis from Lambda
-  // Future<AnalysisResult> getTextAnalysis(String textInput) async {
-  //   final rawData = await networkService.getTextAnalysis(textInput: textInput);
-
-  //   // Transform raw data to AnalysisResult model
-  //   return AnalysisResult.fromJson(rawData);
-  // }

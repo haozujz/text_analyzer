@@ -95,7 +95,7 @@ class CameraViewModel extends StateNotifier<CameraState> {
 
   @override
   void dispose() {
-    _cameraService.dispose();
+    _cameraService.stop();
     super.dispose();
   }
 }

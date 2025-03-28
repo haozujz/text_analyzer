@@ -3,13 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nlp_flutter/Services/network_service.dart';
 import 'package:nlp_flutter/ViewModels/auth_vm.dart';
-import '../Utilities/constants.dart';
+import '../../Utilities/constants.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../Screens/camera_screen.dart';
-import '../ViewModels/camera_vm.dart';
-import '../ViewModels/text_analysis_vm.dart';
-import 'TextAnalysis/text_analysis_tray.dart';
+import 'camera_screen.dart';
+import '../../ViewModels/camera_vm.dart';
+import '../../ViewModels/text_analysis_vm.dart';
+import 'text_analysis_tray.dart';
 
 // import 'package:photo_manager/photo_manager.dart';
 // import 'dart:io';
@@ -74,13 +74,10 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
   @override
   Widget build(BuildContext context) {
     final cameraState = ref.watch(cameraViewModelProvider);
-    final cameraViewModel = ref.read(cameraViewModelProvider.notifier);
+    final cameraVM = ref.read(cameraViewModelProvider.notifier);
     final authState = ref.read(authViewModelProvider);
-    final authViewModel = ref.read(authViewModelProvider.notifier);
-
-    final textAnalysisViewModel = ref.read(
-      textAnalysisViewModelProvider.notifier,
-    );
+    final authVM = ref.read(authViewModelProvider.notifier);
+    final textAnalysisVM = ref.read(textAnalysisViewModelProvider.notifier);
 
     final double screenHeight = MediaQuery.of(context).size.height;
 
@@ -108,15 +105,12 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
 
         if (authState.user != null) {
           try {
-            await textAnalysisViewModel.onPhotoChange(
-              next.imagePath,
-              authState.user!,
-            );
+            await textAnalysisVM.onPhotoChange(next.imagePath, authState.user!);
           } catch (e) {
             if (e is NetworkError) {
-              authViewModel.showMessageOnly(e.message);
+              authVM.showMessageOnly(e.message);
             } else {
-              authViewModel.showMessageOnly('$e');
+              authVM.showMessageOnly('$e');
             }
           }
         }
@@ -130,7 +124,7 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
       );
 
       if (pickedFile != null) {
-        cameraViewModel.setImageFromPicker(pickedFile.path);
+        cameraVM.setImageFromPicker(pickedFile.path);
       }
     }
 
@@ -158,7 +152,7 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      await cameraViewModel.takePicture();
+                      await cameraVM.takePicture();
                     },
                     style: ElevatedButton.styleFrom(
                       shape: CircleBorder(),
@@ -195,7 +189,7 @@ class _TextAnalysisScreenState extends ConsumerState<TextAnalysisScreen> {
                   ),
                   padding: EdgeInsets.all(10), // Ensures a large tap target
                   onPressed: () {
-                    textAnalysisViewModel.toggleTextAnalysis();
+                    textAnalysisVM.toggleTextAnalysis();
                   },
                 ),
               ),
