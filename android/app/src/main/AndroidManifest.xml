@@ -18,7 +18,14 @@
     <application
         android:label="nlp_flutter"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:enableOnBackInvokedCallback="true">
+
+        <!-- Optional (but sometimes needed): -->
+        <meta-data
+            android:name="com.google.android.gms.client_id"
+            android:value="234674436503-nqtmob8t14lboo0c96e763grkjgedpmb.apps.googleusercontent.com" />
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"

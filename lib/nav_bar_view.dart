@@ -1,10 +1,8 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nlp_flutter/Screens/ListResults/list_results_screen.dart';
 import 'package:nlp_flutter/Screens/Profile/profile_screen.dart';
-import 'Services/websocket.dart';
 import 'Utilities/constants.dart';
 import 'ViewModels/text_analysis_vm.dart';
 

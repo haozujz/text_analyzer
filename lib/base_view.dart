@@ -59,7 +59,7 @@ class BaseViewState extends ConsumerState<BaseView>
       _isRequestingPermission = false;
 
       if (cameraPermission.isGranted) {
-        ref.read(cameraViewModelProvider.notifier).initializeCamera();
+        await ref.read(cameraViewModelProvider.notifier).initializeCamera();
       } else if (cameraPermission.isDenied) {
         LoggerService().error(
           "Camera permission denied. Please grant permission.",
@@ -87,7 +87,7 @@ class BaseViewState extends ConsumerState<BaseView>
               !next.isTextAnalysisVisible) {
             cameraVM.stopCamera();
           } else {
-            initializeCamera();
+            await initializeCamera();
           }
         });
 

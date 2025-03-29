@@ -49,5 +49,21 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+  	<dict>
+    	<key>CFBundleURLSchemes</key>
+    	<array>
+      	<string>com.googleusercontent.apps.234674436503-nqtmob8t14lboo0c96e763grkjgedpmb</string>
+    	</array>
+  	</dict>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+  		<string>google</string>
+  		<string>com-google-gidconsent</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 </dict>
 </plist>

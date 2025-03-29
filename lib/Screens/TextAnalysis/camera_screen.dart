@@ -114,11 +114,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                         style: TextStyle(color: Colors.white),
                       )
                       : !cameraState.isCameraInitialized
-                      ? const Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.secondary,
-                        ),
-                      )
+                      ? const Center(child: SizedBox.shrink())
                       : Stack(
                         children: [
                           // Conditionally show camera or captured image

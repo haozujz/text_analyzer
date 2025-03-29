@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_social_button/flutter_social_button.dart';
+import '../../Utilities/helpers.dart';
 import 'sign_up_screen.dart';
 import '../../Utilities/constants.dart';
 import '../../ViewModels/auth_vm.dart';
@@ -16,6 +18,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
+  bool _obscurePassword = true;
 
   Future<void> _signIn(String username, String password) async {
     setState(() {
@@ -38,6 +41,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     ref.watch(authViewModelProvider);
+    final authVM = ref.read(authViewModelProvider.notifier);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -57,9 +61,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 70),
-              _buildTextField(emailController, "Email", false),
+              UiUtils.buildTextField(
+                controller: emailController,
+                label: "Email",
+                isPassword: false,
+                onToggleObscureText: () {
+                  setState(() {
+                    _obscurePassword = !_obscurePassword;
+                  });
+                },
+              ),
               const SizedBox(height: 30),
-              _buildTextField(passwordController, "Password", true),
+              UiUtils.buildTextField(
+                controller: passwordController,
+                label: "Password",
+                isPassword: true,
+                obscureText: _obscurePassword,
+                onToggleObscureText: () {
+                  setState(() {
+                    _obscurePassword = !_obscurePassword;
+                  });
+                },
+              ),
               const SizedBox(height: 50),
               ElevatedButton(
                 onPressed:
@@ -121,34 +144,40 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 child: const Text("Don't have an account? Sign up!"),
               ),
+
+              const SizedBox(height: 30),
+              Row(
+                children: <Widget>[
+                  const Expanded(
+                    child: Divider(color: AppColors.text, thickness: 1),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Text(
+                      "or",
+                      style: TextStyle(
+                        color: AppColors.text,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  const Expanded(
+                    child: Divider(color: AppColors.text, thickness: 1),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                child: FlutterSocialButton(
+                  onTap: () {
+                    authVM.federatedSignInWithGoogle();
+                  },
+                  buttonType: ButtonType.google,
+                ),
+              ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(
-    TextEditingController controller,
-    String label,
-    bool obscureText,
-  ) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      style: const TextStyle(color: AppColors.text),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: AppColors.text),
-        filled: true,
-        fillColor: AppColors.secondary,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
         ),
       ),
     );

@@ -30,7 +30,6 @@ class _AnalysisResultImageScreenState
       if (authState.user == null) {
         return;
       }
-      ;
       try {
         await textAnalysisVM.deleteAnalysisResult(
           user: authState.user!,

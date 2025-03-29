@@ -34,7 +34,7 @@ class _ListResultsScreenState extends ConsumerState<ListResultsScreen>
 
   @override
   void didChangeMetrics() {
-    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+    final bottomInset = View.of(context).viewInsets.bottom;
 
     // Keyboard is considered open if viewInsets.bottom > 0
     final isKeyboardOpen = bottomInset > 0;
@@ -67,7 +67,6 @@ class _ListResultsScreenState extends ConsumerState<ListResultsScreen>
       if (authState.user == null) {
         return;
       }
-      ;
       textAnalysisVM.deleteAnalysisResult(user: authState.user!, id: id);
     }
 

@@ -1,8 +1,13 @@
 import 'dart:async';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:nlp_flutter/Services/logger_service.dart';
+
+// import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+// import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 enum AuthError {
   userNotFound("User does not exist"), // Cognito user not found
@@ -77,10 +82,94 @@ class AuthViewModel extends StateNotifier<AuthState>
   AuthViewModel() : super(AuthState()) {
     WidgetsBinding.instance.addObserver(this); // Lifecycle observer
     _checkAuthStatus();
-    listenToAuthEvents(); // Start listening to auth events
+    listenToAuthEvents();
   }
 
   StreamSubscription? _subscription;
+  //final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'openid']);
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'openid'],
+    serverClientId:
+        '234674436503-nqtmob8t14lboo0c96e763grkjgedpmb.apps.googleusercontent.com',
+  );
+
+  Future<void> federatedSignInWithGoogle() async {
+    try {
+      await GoogleSignIn().signOut();
+
+      final GoogleSignInAccount? account = await _googleSignIn.signIn();
+      if (account == null) {
+        throw Exception('Google sign-in aborted');
+      }
+
+      final GoogleSignInAuthentication auth = await account.authentication;
+
+      LoggerService().info(
+        '🔑 Google Sign-In Auth: '
+        'idToken=${auth.idToken}, '
+        'accessToken=${auth.accessToken}, '
+        'runTimeType=${auth.runtimeType}, ',
+      );
+
+      final String? idToken = auth.idToken;
+      if (idToken == null) {
+        throw Exception('Failed to get Google ID token');
+      }
+
+      final cognitoPlugin = Amplify.Auth.getPlugin(
+        AmplifyAuthCognito.pluginKey,
+      );
+
+      final session = await cognitoPlugin.federateToIdentityPool(
+        token: idToken,
+        provider: AuthProvider.google,
+      );
+
+      // State change is not handled by _subscription
+      final identityId = session.identityId;
+      state = state.copyWith(
+        isSignedIn: true,
+        error: null,
+        user: identityId,
+        email: null, // You can extract this from Google profile if needed
+        identityId: identityId,
+      );
+
+      LoggerService().info('Federated identity session: ${session.toJson()}');
+    } catch (e) {
+      LoggerService().error('Federated sign-in failed: $e');
+      state = state.copyWith(
+        isSignedIn: false,
+        error: AuthError.fromException(e as Exception).message,
+      );
+    }
+  }
+
+  Future<void> signOutFederated() async {
+    try {
+      final cognitoPlugin = Amplify.Auth.getPlugin(
+        AmplifyAuthCognito.pluginKey,
+      );
+      await cognitoPlugin.clearFederationToIdentityPool();
+
+      // Optional: Also sign out from the social provider SDK
+      // await FacebookAuth.instance.logOut(); // For Facebook
+      // Apple doesn't require manual sign-out (token just expires)
+      // Google: GoogleSignIn().signOut();
+
+      // State change is not handled by _subscription
+      state = state.copyWith(
+        isSignedIn: false,
+        error: null,
+        user: null,
+        email: null,
+        identityId: null,
+      );
+    } catch (e) {
+      state = state.copyWith(isSignedIn: false, error: 'Sign out failed: $e');
+    }
+  }
 
   Future<void> _checkAuthStatus() async {
     try {
@@ -158,6 +247,16 @@ class AuthViewModel extends StateNotifier<AuthState>
       }
     } else {
       state = state.copyWith(isSignedIn: isSignedIn, error: error, user: null);
+    }
+  }
+
+  Future<void> signOut() async {
+    try {
+      await Amplify.Auth.signOut();
+      // State change is handled by _subscription
+    } catch (e) {
+      final authError = AuthError.fromException(e as Exception);
+      _updateAuthState(false, authError.message);
     }
   }
 
@@ -240,3 +339,119 @@ class AuthViewModel extends StateNotifier<AuthState>
     super.dispose();
   }
 }
+
+
+
+
+
+
+// Old IAM Trust
+
+// {
+// 	"Version": "2012-10-17",
+// 	"Statement": [
+// 		{
+// 			"Effect": "Allow",
+// 			"Principal": {
+// 				"Federated": "cognito-identity.amazonaws.com"
+// 			},
+// 			"Action": "sts:AssumeRoleWithWebIdentity",
+// 			"Condition": {
+// 				"StringEquals": {
+// 					"cognito-identity.amazonaws.com:aud": "ap-southeast-2:a9a0bcbb-1156-47eb-9009-63667437aca6"
+// 				},
+// 				"ForAnyValue:StringLike": {
+// 					"cognito-identity.amazonaws.com:amr": "authenticated"
+// 				}
+// 			}
+// 		}
+// 	]
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // Future<void> federatedSignInWithApple() async {
+  //   try {
+  //     final appleCredential = await SignInWithApple.getAppleIDCredential(
+  //       scopes: [
+  //         AppleIDAuthorizationScopes.email,
+  //         AppleIDAuthorizationScopes.fullName,
+  //       ],
+  //     );
+
+  //     final appleIdToken = appleCredential.identityToken;
+  //     if (appleIdToken == null) throw Exception('Apple ID token is null');
+
+  //     final cognitoPlugin = Amplify.Auth.getPlugin(
+  //       AmplifyAuthCognito.pluginKey,
+  //     );
+
+  //     final session = await cognitoPlugin.federateToIdentityPool(
+  //       token: appleIdToken,
+  //       provider: AuthProvider.apple,
+  //     );
+
+  //     final identityId = session.identityId;
+  //     state = state.copyWith(
+  //       isSignedIn: true,
+  //       user: identityId,
+  //       identityId: identityId,
+  //       email: null,
+  //       error: null,
+  //     );
+  //   } catch (e) {
+  //     state = state.copyWith(
+  //       isSignedIn: false,
+  //       error: 'Apple Sign-In failed: $e',
+  //     );
+  //   }
+  // }
+
+  // Future<void> federatedSignInWithFacebook() async {
+  //   try {
+  //     final loginResult =
+  //         await FacebookAuth.instance.login(); // Triggers Facebook login flow
+
+  //     if (loginResult.status != LoginStatus.success) {
+  //       throw Exception('Facebook login failed: ${loginResult.message}');
+  //     }
+
+  //     final accessToken = loginResult.accessToken?.token;
+  //     if (accessToken == null) throw Exception('Facebook access token is null');
+
+  //     final cognitoPlugin = Amplify.Auth.getPlugin(
+  //       AmplifyAuthCognito.pluginKey,
+  //     );
+
+  //     final session = await cognitoPlugin.federateToIdentityPool(
+  //       token: accessToken,
+  //       provider: AuthProvider.facebook,
+  //     );
+
+  //     final identityId = session.identityId;
+  //     state = state.copyWith(
+  //       isSignedIn: true,
+  //       user: identityId,
+  //       identityId: identityId,
+  //       email: null,
+  //       error: null,
+  //     );
+  //   } catch (e) {
+  //     state = state.copyWith(
+  //       isSignedIn: false,
+  //       error: 'Facebook Sign-In failed: $e',
+  //     );
+  //   }
+  // }

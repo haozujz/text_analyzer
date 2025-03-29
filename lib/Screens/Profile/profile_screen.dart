@@ -1,4 +1,3 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../Utilities/constants.dart';
@@ -10,6 +9,7 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authViewModelProvider);
+    final authVM = ref.read(authViewModelProvider.notifier);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -31,8 +31,8 @@ class ProfileScreen extends ConsumerWidget {
                 ),
 
                 Positioned(
-                  bottom: 6, // Adjust to move it slightly up/down
-                  right: 6, // Adjust to move it closer to the avatar's edge
+                  bottom: 6,
+                  right: 6,
                   child: GestureDetector(
                     onTap: () {
                       // TODO: Edit profile picture
@@ -97,7 +97,7 @@ class ProfileScreen extends ConsumerWidget {
 
             ElevatedButton(
               onPressed: () async {
-                await Amplify.Auth.signOut();
+                await authVM.signOut();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,

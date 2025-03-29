@@ -66,9 +66,9 @@ class TextAnalysisTray extends ConsumerWidget {
               ] else ...[
                 SentimentInfoItem(sentimentAnalysis: result.sentiment),
                 const SizedBox(height: 12),
-                EntityInfoItem(entities: result.entities ?? []),
+                EntityInfoItem(entities: result.entities),
                 const SizedBox(height: 12),
-                KeyPhraseInfoItem(keyPhrases: result.keyPhrases ?? []),
+                KeyPhraseInfoItem(keyPhrases: result.keyPhrases),
               ],
 
               const SizedBox(height: 12),

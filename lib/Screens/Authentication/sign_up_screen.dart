@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../Utilities/constants.dart';
+import '../../Utilities/helpers.dart';
 import '../../ViewModels/auth_vm.dart';
 import '../../Views/three_loading_indicator.dart';
 
@@ -19,6 +20,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       TextEditingController();
   bool _isLoading = false;
   bool _isVerificationButtonJustTapped = false;
+  bool _obscurePassword = true;
 
   Future<void> _signUp(String email, String verificationCode) async {
     setState(() {
@@ -75,17 +77,29 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 ),
               ),
               const SizedBox(height: 50),
-              _buildTextField(emailController, "Email", false),
-              const SizedBox(height: 20),
-              _buildTextField(passwordController, "Password", true),
-              const SizedBox(height: 20),
+              UiUtils.buildTextField(
+                controller: emailController,
+                label: "Email",
+                isPassword: false,
+              ),
+              const SizedBox(height: 30),
+              UiUtils.buildTextField(
+                controller: passwordController,
+                label: "Password",
+                isPassword: true,
+                obscureText: _obscurePassword,
+                onToggleObscureText: () {
+                  setState(() {
+                    _obscurePassword = !_obscurePassword;
+                  });
+                },
+              ),
+              const SizedBox(height: 30),
+
               ElevatedButton(
                 onPressed:
                     _isVerificationButtonJustTapped
-                        ? () => _getVerificationCode(
-                          emailController.text.trim(),
-                          passwordController.text.trim(),
-                        )
+                        ? () => ()
                         : () => _getVerificationCode(
                           emailController.text.trim(),
                           passwordController.text.trim(),
@@ -93,8 +107,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
                       _isVerificationButtonJustTapped
-                          ? CupertinoColors
-                              .systemGrey //AppColors.buttonDisabled
+                          ? CupertinoColors.systemGrey
                           : AppColors.button,
                   foregroundColor: Colors.white,
                   minimumSize: const Size(400, 50),
@@ -104,13 +117,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         ? Text("Please Wait")
                         : Text("Get Verification Code"),
               ),
-              const SizedBox(height: 20),
-              _buildTextField(
-                verificationCodeController,
-                "Verification Code",
-                false,
-              ),
               const SizedBox(height: 30),
+              UiUtils.buildTextField(
+                controller: verificationCodeController,
+                label: "Verification Code",
+                isPassword: false,
+              ),
+              const SizedBox(height: 50),
               ElevatedButton(
                 onPressed:
                     _isLoading
@@ -141,32 +154,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(
-    TextEditingController controller,
-    String label,
-    bool obscureText,
-  ) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      style: const TextStyle(color: AppColors.text),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: AppColors.text),
-        filled: true,
-        fillColor: AppColors.secondary,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
         ),
       ),
     );
