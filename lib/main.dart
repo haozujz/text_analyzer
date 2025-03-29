@@ -27,9 +27,11 @@ Future<void> _configureAmplify() async {
     await Amplify.addPlugin(AmplifyAuthCognito());
     await Amplify.addPlugin(AmplifyStorageS3());
     await Amplify.configure(amplifyConfig);
+    //LoggerService().info('Successfully configured, config: $amplifyConfig');
     LoggerService().info('Successfully configured');
   } on Exception catch (e) {
-    LoggerService().error('Error configuring Amplify: $e');
+    LoggerService().error('Error configuring Amplify, error: $e');
+    LoggerService().error('Error configuring Amplify, config: $amplifyConfig');
   }
 }
 

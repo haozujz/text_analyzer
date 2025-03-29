@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_social_button/flutter_social_button.dart';
+import 'package:nlp_flutter/Screens/Authentication/fed_login.dart';
 import '../../Utilities/helpers.dart';
 import 'sign_up_screen.dart';
 import '../../Utilities/constants.dart';
@@ -171,7 +172,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               SizedBox(
                 child: FlutterSocialButton(
                   onTap: () {
+                    AuthService().signInWithHostedUI();
+                  },
+                  buttonType: ButtonType.google,
+                ),
+              ),
+              SizedBox(
+                child: FlutterSocialButton(
+                  onTap: () {
                     authVM.federatedSignInWithGoogle();
+                  },
+                  buttonType: ButtonType.google,
+                ),
+              ),
+              SizedBox(
+                child: FlutterSocialButton(
+                  onTap: () {
+                    authVM.signInWithWebUIGoogle();
                   },
                   buttonType: ButtonType.google,
                 ),

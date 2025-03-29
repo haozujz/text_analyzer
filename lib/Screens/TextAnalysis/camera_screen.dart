@@ -132,7 +132,8 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                               );
                             },
                             child:
-                                cameraState.imagePath.isEmpty
+                                (cameraState.imagePath.isEmpty &&
+                                        cameraVM.getCameraController() != null)
                                     ? Align(
                                       alignment: Alignment.topCenter,
                                       key: ValueKey(

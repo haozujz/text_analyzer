@@ -86,13 +86,61 @@ class AuthViewModel extends StateNotifier<AuthState>
   }
 
   StreamSubscription? _subscription;
-  //final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'openid']);
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'openid'],
     serverClientId:
         '234674436503-nqtmob8t14lboo0c96e763grkjgedpmb.apps.googleusercontent.com',
   );
+
+  Future<void> signInWithWebUIGoogle() async {
+    try {
+      final result = await Amplify.Auth.signInWithWebUI(
+        provider: AuthProvider.google,
+      );
+
+      if (!result.isSignedIn) {
+        throw Exception('Google Hosted UI sign-in was unsuccessful.');
+      }
+
+      final session = await Amplify.Auth.fetchAuthSession();
+      final attributes = await Amplify.Auth.fetchUserAttributes();
+
+      String? email;
+      String? sub;
+
+      for (final attr in attributes) {
+        if (attr.userAttributeKey.key == 'email') {
+          email = attr.value;
+        } else if (attr.userAttributeKey.key == 'sub') {
+          sub = attr.value;
+        }
+      }
+
+      final identityId = session.toJson()['identityId'] as String? ?? '';
+
+      state = state.copyWith(
+        isSignedIn: true,
+        error: null,
+        user: sub,
+        email: email,
+        identityId: identityId,
+      );
+
+      LoggerService().info('Google Hosted UI sign-in successful');
+      LoggerService().info('Google Hosted UI Email: $email');
+      LoggerService().info('Google Hosted UI Identity ID: $identityId');
+    } on AuthException catch (e) {
+      LoggerService().error('Google Hosted UI sign-in failed: ${e.message}');
+      state = state.copyWith(
+        isSignedIn: false,
+        error: AuthError.fromException(e).message,
+      );
+    } catch (e) {
+      LoggerService().error('Google Hosted UI Unexpected error: $e');
+      state = state.copyWith(isSignedIn: false, error: e.toString());
+    }
+  }
 
   Future<void> federatedSignInWithGoogle() async {
     try {
@@ -106,9 +154,9 @@ class AuthViewModel extends StateNotifier<AuthState>
       final GoogleSignInAuthentication auth = await account.authentication;
 
       LoggerService().info(
-        '🔑 Google Sign-In Auth: '
-        'idToken=${auth.idToken}, '
-        'accessToken=${auth.accessToken}, '
+        '🔑 Google Sign-In Auth: \n'
+        'idToken=${auth.idToken}, \n'
+        'accessToken=${auth.accessToken}, \n'
         'runTimeType=${auth.runtimeType}, ',
       );
 
@@ -341,8 +389,21 @@ class AuthViewModel extends StateNotifier<AuthState>
 }
 
 
-
-
+// jwt token decoded:
+// {
+//   "iss": "https://accounts.google.com",
+//   "azp": "234674436503-91ta2sn2062csbg60l6nckvvlcfvs1f5.apps.googleusercontent.com",
+//   "aud": "234674436503-nqtmob8t14lboo0c96e763grkjgedpmb.apps.googleusercontent.com",
+//   "sub": "111312505065444776539",
+//   "email": "joseph.zhu.jz.game@gmail.com",
+//   "email_verified": true,
+//   "name": "Joseph Zhu",
+//   "picture": "https://lh3.googleusercontent.com/a/ACg8ocLJrfjwHhIQhYQDpu4epnPDwklJfXBwMohTFp2SXFi6QihoCg=s96-c",
+//   "given_name": "Joseph",
+//   "family_name": "Zhu",
+//   "iat": 1743232245,
+//   "exp": 1743235845
+// }
 
 
 // Old IAM Trust
