@@ -34,6 +34,14 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        //
+        resValue(
+        type = "string",
+        name = "default_web_client_id",
+        value = "234674436503-nqtmob8t14lboo0c96e763grkjgedpmb.apps.googleusercontent.com"
+        )
+        //
     }
 
     buildTypes {
@@ -58,6 +66,10 @@ dependencies {
     implementation("com.amplifyframework:aws-api:2.21.1")
     implementation("com.amplifyframework:aws-datastore:2.21.1")
     implementation("com.amplifyframework:aws-storage-s3:2.21.1")
+
+    //
+    implementation("androidx.browser:browser:1.5.0")
+    //
 }
 
 flutter {

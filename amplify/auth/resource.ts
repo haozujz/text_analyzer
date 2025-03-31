@@ -19,12 +19,24 @@ export const auth = defineAuth({
     externalProviders: {
       google: {
         clientId: secret('GOOGLE_CLIENT_ID'),
-        clientSecret: secret('GOOGLE_CLIENT_SECRET')
+        clientSecret: secret('GOOGLE_CLIENT_SECRET'),
+        scopes: ["email", "profile", "openid"],
       },
+      // facebook: {
+      //   clientId: secret("FACEBOOK_CLIENT_ID"),
+      //   clientSecret: secret("FACEBOOK_CLIENT_SECRET"),
+      //   scopes: ["email", "public_profile"],
+      //   attributeMapping: {
+      //     email: "email",
+      //     familyName: "last_name",
+      //     givenName: "first_name",
+      //     fullname: "name",
+      //   },
+      // },
       callbackUrls: ['myapp://callback/'],
       logoutUrls: ['myapp://signout/'],
-    }
-  }
+    },
+  },
 });
 
 

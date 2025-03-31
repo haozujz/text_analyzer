@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   amplify_db_common
   desktop_webview_window
   file_selector_linux
+  flutter_secure_storage_linux
   url_launcher_linux
   window_to_front
 )

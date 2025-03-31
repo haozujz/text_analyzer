@@ -120,7 +120,10 @@ class NetworkService {
     try {
       final response = await http.delete(
         Uri.parse('${baseUrl}results_db'),
-        headers: {'Content-Type': 'application/json', 'x-api-key': apiKey},
+        headers: {
+          'Content-Type': 'application/json',
+          //'x-api-key': apiKey,
+        },
         body: json.encode({'user': user, 'id': id}),
       );
 

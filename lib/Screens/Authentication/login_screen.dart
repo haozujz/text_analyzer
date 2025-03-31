@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_social_button/flutter_social_button.dart';
-import 'package:nlp_flutter/Screens/Authentication/fed_login.dart';
+import 'package:nlp_flutter/Services/fed_auth.dart';
+import '../../Services/logger_service.dart';
 import '../../Utilities/helpers.dart';
 import 'sign_up_screen.dart';
 import '../../Utilities/constants.dart';
@@ -171,24 +172,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 20),
               SizedBox(
                 child: FlutterSocialButton(
-                  onTap: () {
-                    AuthService().signInWithHostedUI();
-                  },
-                  buttonType: ButtonType.google,
-                ),
-              ),
-              SizedBox(
-                child: FlutterSocialButton(
-                  onTap: () {
-                    authVM.federatedSignInWithGoogle();
-                  },
-                  buttonType: ButtonType.google,
-                ),
-              ),
-              SizedBox(
-                child: FlutterSocialButton(
-                  onTap: () {
-                    authVM.signInWithWebUIGoogle();
+                  onTap: () async {
+                    try {
+                      await authVM.federatedSignInWithGoogleCustom();
+                    } catch (e) {
+                      LoggerService().error(e.toString());
+                    }
                   },
                   buttonType: ButtonType.google,
                 ),
@@ -200,3 +189,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 }
+
+
+              // SizedBox(
+              //   child: FlutterSocialButton(
+              //     onTap: () {
+              //       authVM.signInWithWebUIGoogle();
+              //       //authVM.federatedSignInWithFacebook();
+              //     },
+              //     buttonType: ButtonType.google,
+              //   ),
+              // ),
+              // SizedBox(
+              //   child: FlutterSocialButton(
+              //     onTap: () {
+              //       authVM.federatedSignInWithGoogle();
+              //     },
+              //     buttonType: ButtonType.google,
+              //   ),
+              // ),

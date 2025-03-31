@@ -70,7 +70,7 @@ class StorageService {
           ).result;
 
       final imageUrl = result.url.toString();
-      LoggerService().info('S3 Image URL: $imageUrl');
+      //LoggerService().info('S3 Image URL: $imageUrl');
       // Cache
       _urlCache[key] = _CachedUrl(imageUrl, DateTime.now());
       return imageUrl;

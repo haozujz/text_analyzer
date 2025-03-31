@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
 class LoggerService {
@@ -40,5 +41,12 @@ class LoggerService {
   // Replacing 'wtf' with 'error' for severe failures
   void severeFailure(String message) {
     _logger.e("WTF: $message");
+  }
+
+  void prettyPrint(String text, {int chunkSize = 800}) {
+    final pattern = RegExp('.{1,$chunkSize}'); // break into 800-char chunks
+    for (final match in pattern.allMatches(text)) {
+      debugPrint(match.group(0)); // debugPrint handles long strings better
+    }
   }
 }
