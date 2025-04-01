@@ -6,7 +6,6 @@ import '../Models/analysis_result_model.dart';
 import 'package:nlp_flutter/Services/logger_service.dart';
 import 'package:nlp_flutter/Services/network_service.dart';
 import '../Services/ocr_service.dart';
-//import 'dart:convert';
 import 'package:uuid/uuid.dart';
 
 import '../Services/storage_service.dart';
@@ -232,6 +231,7 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
 
   Future<void> postAnalysisResult() async {
     try {
+      // Add item to cloud
       if (state.analysisResult != null) {
         await AnalysisResultRepository().postAnalysisResult(
           analysisResult: state.analysisResult!,
@@ -244,39 +244,26 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
     }
   }
 
-  // Future<void> postAnalysisResult() async {
-  //   try {
-  //     if (state.analysisResult != null) {
-  //       await NetworkService().postAnalysisResult(state.analysisResult!);
-  //     } else {
-  //       throw NetworkError.unknown;
-  //     }
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
-
   Future<void> deleteAnalysisResult({
     required String user,
     required String id,
   }) async {
+    // Remove local item
+    var newList = state.storedAnalysisResults;
+    newList.removeWhere((element) => element.id == id);
+
+    state = state.copyWith(
+      storedAnalysisResults: newList,
+      analysisResult: state.analysisResult,
+    );
+
+    // Remove cloud item
     try {
       await AnalysisResultRepository().deleteAnalysisResult(user: user, id: id);
     } catch (e) {
       rethrow;
     }
   }
-
-  // Future<void> deleteAnalysisResult({
-  //   required String user,
-  //   required String id,
-  // }) async {
-  //   try {
-  //     await NetworkService().deleteAnalysisResult(user: user, id: id);
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
 
   Future<void> emptyStoredAnalysisResults() async {
     state = state.copyWith(

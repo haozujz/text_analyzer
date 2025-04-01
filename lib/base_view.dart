@@ -50,6 +50,44 @@ class BaseViewState extends ConsumerState<BaseView>
     final authVM = ref.read(authViewModelProvider.notifier);
     final cameraVM = ref.read(cameraViewModelProvider.notifier);
 
+    void showPermissionDeniedDialog(BuildContext context) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: AppColors.background,
+            title: Text(
+              'Permission Denied',
+              style: TextStyle(
+                color: AppColors.text,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            content: Text(
+              'Camera permission has been permanently denied. Please go to Settings and enable camera access for this app.',
+              style: TextStyle(color: AppColors.text),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  openAppSettings();
+                },
+                child: Text(
+                  'Go to Settings',
+                  style: TextStyle(
+                    color:
+                        AppColors
+                            .text, // Customize the color of the button text
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     Future<void> initializeCamera() async {
       if (_isRequestingPermission) {
         return;
@@ -71,9 +109,10 @@ class BaseViewState extends ConsumerState<BaseView>
         LoggerService().error(
           "Camera permission permanently denied. Opening app settings...",
         );
-        Future.delayed(const Duration(milliseconds: 5000), () {
-          openAppSettings();
-        });
+        // Future.delayed(const Duration(milliseconds: 5000), () {
+        //   openAppSettings();
+        // });
+        showPermissionDeniedDialog(context);
       }
     }
 
@@ -112,6 +151,7 @@ class BaseViewState extends ConsumerState<BaseView>
           }
 
           if (previous?.user != next.user && next.user != null) {
+            textAnalysisVM.toggleTextAnalysis(true);
             textAnalysisVM.emptyStoredAnalysisResults();
             try {
               await textAnalysisVM.fetchAnalysisResults(next.user!);
@@ -119,8 +159,8 @@ class BaseViewState extends ConsumerState<BaseView>
               LoggerService().info('Error fetching analysis results: $e');
             }
             // Reconnecting is not always necessary, as this app's dynamoDB item contains connectionId only,
-            // but you must include userId as well if sending userId-specific messages,
-            // hence you will need to update the userId field here
+            // but userId must be included if sending userId-specific messages,
+            // if so, can update the userId field here
             WebSocketService().connect();
           }
         });

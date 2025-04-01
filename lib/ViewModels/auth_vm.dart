@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -274,11 +272,11 @@ class AuthViewModel extends StateNotifier<AuthState>
   Future<void> signOutFederated() async {
     try {
       await GoogleSignIn().signOut();
-
       final cognitoPlugin = Amplify.Auth.getPlugin(
         AmplifyAuthCognito.pluginKey,
       );
       await cognitoPlugin.clearFederationToIdentityPool();
+      SecureStorageService().clearUser();
 
       // Optional: Also sign out from the social provider SDK
       // await FacebookAuth.instance.logOut();

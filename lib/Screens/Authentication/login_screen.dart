@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_social_button/flutter_social_button.dart';
-import 'package:nlp_flutter/Services/fed_auth.dart';
 import '../../Services/logger_service.dart';
 import '../../Utilities/helpers.dart';
 import 'sign_up_screen.dart';

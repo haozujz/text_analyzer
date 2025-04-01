@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'dart:convert';
-
 class FederatedUser {
   final String sub;
   final String email;

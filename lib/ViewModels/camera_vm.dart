@@ -78,7 +78,6 @@ class CameraViewModel extends StateNotifier<CameraState> {
     return _cameraService.controller;
   }
 
-  // Set image according to Image Picker
   void setImageFromPicker(String imagePath) {
     state = state.copyWith(imagePath: imagePath);
     LoggerService().info('Image path set to picked image: ${state.imagePath}');
@@ -88,10 +87,6 @@ class CameraViewModel extends StateNotifier<CameraState> {
     _cameraService.stop();
     state = state.copyWith(isCameraInitialized: false);
   }
-
-  // void resumeCamera() {
-  //   _cameraService.resume();
-  // }
 
   @override
   void dispose() {

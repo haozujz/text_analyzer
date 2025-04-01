@@ -22,12 +22,34 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>myapp</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.234674436503-nqtmob8t14lboo0c96e763grkjgedpmb</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>google</string>
+		<string>com-google-gidconsent</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Requesting permission to access your camera. Camera access is required to capture photos and the live camera feed which can then be used to perform optical character recognition, which enables you to learn more about the content of your images by identifying text within them.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app requires access to your microphone for recording audio.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Requesting permission to access your photo library, allowing you to pick images to perform text recognition on.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
@@ -48,28 +70,6 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>CFBundleURLTypes</key>
-	<array>
-  <!-- flutter_web_auth_2 redirect (e.g. myapp://callback) -->
-  		<dict>
-    		<key>CFBundleURLSchemes</key>
-    		<array>
-      			<string>myapp</string>
-    		</array>
-  		</dict>
-	<!-- GoogleSignIn plugin -->
-  		<dict>
-    		<key>CFBundleURLSchemes</key>
-    		<array>
-      			<string>com.googleusercontent.apps.234674436503-nqtmob8t14lboo0c96e763grkjgedpmb</string>
-    		</array>
-  		</dict>
-	</array>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-  		<string>google</string>
-  		<string>com-google-gidconsent</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
