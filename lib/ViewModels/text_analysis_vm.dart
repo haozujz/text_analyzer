@@ -64,6 +64,7 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
 
   TextAnalysisViewModel(this.ref) : super(TextAnalysisState()) {
     listenToWebSocket();
+    cleanOrphanedData();
   }
 
   void listenToWebSocket() {
@@ -320,6 +321,15 @@ class TextAnalysisViewModel extends StateNotifier<TextAnalysisState> {
       state = state.copyWith(analysisResult: newAnalysisResult);
     } catch (e) {
       rethrow;
+    }
+  }
+
+  Future<void> cleanOrphanedData() async {
+    try {
+      final result = await AnalysisResultRepository().cleanOrphanedResults();
+      LoggerService().info('Cleaned orphaned data $result');
+    } catch (e) {
+      LoggerService().error('Error on cleaning zombie data: $e');
     }
   }
 }

@@ -158,4 +158,9 @@ class AnalysisResultRepository {
       mixed: double.tryParse(sentimentMap['mixed']['N']) ?? 0.0,
     );
   }
+
+  Future<Map<String, dynamic>> cleanOrphanedResults() async {
+    final response = await NetworkService().cleanOrphanedAnalysisResults();
+    return response;
+  }
 }

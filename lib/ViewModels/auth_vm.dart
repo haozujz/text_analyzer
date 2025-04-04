@@ -137,7 +137,8 @@ class AuthViewModel extends StateNotifier<AuthState>
       }
     } else {
       LoggerService().error("🔁 Token refresh failed or expired");
-      state = state.copyWith(isSignedIn: false);
+      signOut();
+      //state = state.copyWith(isSignedIn: false);
     }
   }
 

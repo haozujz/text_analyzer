@@ -3,6 +3,7 @@ import 'dart:io';
 //import 'package:aws_dynamodb_api/dynamodb-2012-08-10.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:nlp_flutter/Services/logger_service.dart';
 import 'dart:convert';
 
 import '../Models/analysis_result_model.dart';
@@ -191,41 +192,41 @@ class NetworkService {
       throw NetworkError.unknown;
     }
   }
+
+  // Alternatively use AWS eventbridge
+  Future<Map<String, dynamic>> cleanOrphanedAnalysisResults() async {
+    try {
+      final response = await http.post(
+        Uri.parse('${baseUrl}clean_orphaned_results'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      switch (response.statusCode) {
+        case 200:
+          return json.decode(response.body);
+        case 400:
+          throw NetworkError.badRequest;
+        case 401:
+          throw NetworkError.unauthorized;
+        case 403:
+          throw NetworkError.forbidden;
+        case 404:
+          throw NetworkError.notFound;
+        case 500:
+        case 502:
+        case 503:
+          throw NetworkError.serverError;
+        default:
+          throw NetworkError.unknown;
+      }
+    } on SocketException {
+      throw NetworkError.noInternet;
+    } on TimeoutException {
+      throw NetworkError.timeout;
+    } on NetworkError {
+      rethrow;
+    } catch (e) {
+      throw NetworkError.unknown;
+    }
+  }
 }
-
-
-
-
-//"{\"user\": \"123user\", \"id\": \"123id\", \"text\": \"This is a test text\", \"language\": \"en\", \"sentiment\": {\"sentiment\": \"POSITIVE\", \"positive\": 0.9, \"negative\": 0.05, \"neutral\": 0.05, \"mixed\": 0.0}, \"entities\": [{\"text\": \"entity1\", \"type\": \"PERSON\", \"sentiment\": \"POSITIVE\"}], \"keyPhrases\": [\"keyphrase1\", \"keyphrase2\"], \"imageId\": \"img123\", \"imagePath\": \"/images/img123.jpg\", \"createdAt\": \"2025-03-18T12:34:56Z\"}",
-
-
-     // final analysisResult = AnalysisResult(
-      //   user: '123user',
-      //   id: '123id',
-      //   text: 'test input text',
-      //   language: 'en',
-      //   sentiment: SentimentAnalysis(
-      //     sentiment: 'POSITIVE',
-      //     positive: 0.9,
-      //     negative: 0.05,
-      //     neutral: 0.05,
-      //     mixed: 0.0,
-      //   ),
-      //   entities: [
-      //     EntitySentiment(
-      //       text: 'entity1',
-      //       type: 'PERSON',
-      //       sentiment: 'POSITIVE',
-      //     ),
-      //   ],
-      //   keyPhrases: ['keyphrase1', 'keyphrase2'],
-      //   imageId: 'img123',
-      //   imagePath: '',
-      //   createdAt: DateTime.parse('2025-03-18T12:34:56Z'),
-      // );
-
-//entities
-//[ { "M" : { "type" : { "S" : "software" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "GarchompeX" } } }, { "M" : { "type" : { "S" : "other" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "Evohres" } } }, { "M" : { "type" : { "S" : "organization" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "Gabite  Linear" } } }, { "M" : { "type" : { "S" : "quantity" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "50" } } }, { "M" : { "type" : { "S" : "quantity" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "1" } } }, { "M" : { "type" : { "S" : "person" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "your" } } }, { "M" : { "type" : { "S" : "person" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "opponent" } } }, { "M" : { "type" : { "S" : "person" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "opponent" } } }, { "M" : { "type" : { "S" : "other" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "Pokémon" } } }, { "M" : { "type" : { "S" : "other" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "Pokémon" } } }, { "M" : { "type" : { "S" : "person" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "totiycto" } } }, { "M" : { "type" : { "S" : "organization" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "Dragon" } } }, { "M" : { "type" : { "S" : "quantity" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "+20" } } }, { "M" : { "type" : { "S" : "quantity" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "170" } } }, { "M" : { "type" : { "S" : "person" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "your" } } }, { "M" : { "type" : { "S" : "person" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "your" } } }, { "M" : { "type" : { "S" : "quantity" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "2" } } }, { "M" : { "type" : { "S" : "quantity" }, "sentiment" : { "S" : "neutral" }, "text" : { "S" : "100" } } } ]
-//sentiment
-//{ "sentiment" : { "S" : "neutral" }, "neutral" : { "N" : "98.11716079711914" }, "negative" : { "N" : "1.2047290802001953" }, "mixed" : { "N" : "0.010068455594591796" }, "positive" : { "N" : "0.6680459249764681" } }
-

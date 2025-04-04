@@ -50,7 +50,6 @@ class WebSocketService {
     _channel?.sink.add(message);
   }
 
-  // Disconnect the WebSocket
   void disconnect() {
     _channel?.sink.close();
   }

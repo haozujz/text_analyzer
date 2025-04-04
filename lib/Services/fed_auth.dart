@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -19,7 +20,7 @@ class FedAuthService {
 
   FedAuthService._internal();
 
-  final _clientId = '5ogh6lid1onu5vri5vs5s8de9u';
+  final _clientId = dotenv.env['CLIENT_ID']!;
   final _redirectUri = 'myapp://callback/';
   final _authDomain =
       'https://fb6b69885de21932c1f2.auth.ap-southeast-2.amazoncognito.com';
@@ -64,7 +65,7 @@ class FedAuthService {
 
       var tokenData = await _fetchToken(code);
 
-      //LoggerService().info('✅ TokenData: $tokenData');
+      //LoggerService().info('TokenData: $tokenData');
       //LoggerService().info('Access token: ${tokenData['access_token']}');
       //LoggerService().info('ID token: ${tokenData['id_token']}');
       //LoggerService().info('Refresh token: ${tokenData['refresh_token']}');
@@ -90,9 +91,9 @@ class FedAuthService {
       final sub = decodedToken['sub'];
       final email = decodedToken['email'];
       // final identityId = session.identityId;
-      // LoggerService().info("✅ FedUser sub: $sub");
-      // LoggerService().info("✅ FedUser email: $email");
-      // LoggerService().info("✅ FedUser identityId: $identityId");
+      // LoggerService().info("FedUser sub: $sub");
+      // LoggerService().info("FedUser email: $email");
+      // LoggerService().info("FedUser identityId: $identityId");
 
       return {
         ...tokenData,
@@ -175,12 +176,3 @@ class FedAuthService {
     }
   }
 }
-
-      // final refreshedUser = FederatedUser(
-      //   sub: user.sub,
-      //   email: user.email,
-      //   accessToken: tokenData['access_token'],
-      //   idToken: tokenData['id_token'],
-      //   refreshToken: user.refreshToken, // Reuse the same refresh token
-      //   idTokenExpiry: expiry,
-      // );
